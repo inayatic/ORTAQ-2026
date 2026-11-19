@@ -27,6 +27,7 @@ export default async function ScenarioPage({
         {t.back}
       </Link>
       <p className="mt-2 rounded bg-amber-50 p-2 text-sm text-amber-900">{t.disclaimer}</p>
+      {process.env.LLM_MOCK === "true" && <p role="note" className="mt-2 rounded bg-sky-50 p-2 text-sm text-sky-900">{t.demo_banner}</p>}
       <h1 className="mt-3 text-xl font-bold">{s.title[lang]}</h1>
       <p className="text-sm">{s.situation[lang]}</p>
       <p className="mt-1 text-sm">

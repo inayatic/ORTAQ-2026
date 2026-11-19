@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { chat } from "@/lib/llm";
+import { demoReplies } from "@/lib/demo";
 import { LANGS, LEVELS } from "@/lib/i18n";
 import { buildCharacterPrompt } from "@/lib/prompts";
 import { getScenario } from "@/lib/scenarios";
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
   }
 
   // Берём первый кусок до ответа, чтобы сбой провайдера вернуть статусом, а не обрывом потока.
-  const it = chat(messages, { system: buildCharacterPrompt(scenario, level, lang) })[Symbol.asyncIterator]();
+  const it = chat(messages, { system: buildCharacterPrompt(scenario, level, lang), mock: demoReplies(scenario) })[Symbol.asyncIterator]();
   let r: IteratorResult<string>;
   try {
     r = await it.next();

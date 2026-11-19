@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { chatJson, type Message } from "./llm";
+import { demoReview } from "./demo";
 import { getDict, type Lang } from "./i18n";
 import { buildReviewPrompt } from "./prompts";
 import { articlesIn, stripArticles } from "./safety";
@@ -58,7 +59,10 @@ export async function generateReview(s: Scenario, lang: Lang, messages: Message[
   const transcript = messages.map((m) => `${m.role === "user" ? "Студент" : s.character.name}: ${m.content}`).join("\n");
   try {
     // chatJson уже делает один повтор при невалидном ответе
-    const raw = await chatJson([{ role: "user", content: transcript }], reviewSchema, { system: buildReviewPrompt(s, lang, facts) });
+    const raw = await chatJson([{ role: "user", content: transcript }], reviewSchema, {
+      system: buildReviewPrompt(s, lang, facts),
+      mock: process.env.LLM_MOCK === "true" ? demoReview(s, messages) : undefined,
+    });
     return { review: sanitize(raw, facts, lang, messages), fallback: false };
   } catch {
     return { review: fallbackReview(lang), fallback: true };

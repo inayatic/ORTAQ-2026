@@ -55,3 +55,22 @@ describe("языки", () => {
     for (const s of loadScenarios()) for (const l of LANGS) for (const v of [s.title[l], s.situation[l]]) expect(v).not.toMatch(/TODO-VERIFY/);
   });
 });
+
+describe("демо-режим", () => {
+  it("демо-разбор по каждому сценарию валиден, цитаты — реплики студента", async () => {
+    const { generateReview } = await import("@/lib/review");
+    for (const s of loadScenarios()) {
+      const msgs = [
+        { role: "user" as const, content: "Здравствуйте, прошу вернуть деньги письменно" },
+        { role: "assistant" as const, content: "Нет" },
+        { role: "user" as const, content: "Ну хорошо" },
+      ];
+      const { review, fallback } = await generateReview(s, "ru", msgs);
+      expect(fallback).toBe(false);
+      expect(review.scores).toHaveLength(s.success_criteria.length);
+      expect(review.mistakes.length).toBeGreaterThan(0);
+      for (const m of review.mistakes) expect(msgs[0].content + msgs[2].content).toContain(m.quote);
+      expect(review.rights).toHaveLength(1); // справки не проверены
+    }
+  });
+});

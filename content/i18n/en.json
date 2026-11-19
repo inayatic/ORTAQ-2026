@@ -62,5 +62,6 @@
   "about_limits": "Limits: this is a training tool, not legal advice. The AI can be wrong. Legal facts come only from reference notes written and checked by a human; until a note is verified, article numbers and deadlines are not named.",
   "about_sources": "Sources: the official database of legal acts of Kazakhstan — adilet.zan.kz.",
   "about_privacy": "Privacy: we do not ask for names or contacts, dialogue texts are not stored, only anonymous statistics are kept.",
-  "about_help": "Real help: your university's legal clinic and official state channels. Verified contacts will be added before publication."
+  "about_help": "Real help: your university's legal clinic and official state channels. Verified contacts will be added before publication.",
+  "demo_banner": "Demo mode: the counterpart's lines and the review are pre-recorded, no AI is used."
 }

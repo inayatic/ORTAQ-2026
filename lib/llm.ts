@@ -3,7 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { z } from "zod";
 
 export type Message = { role: "user" | "assistant"; content: string };
-export type ChatOptions = { system?: string; maxTokens?: number };
+// mock — заготовка для LLM_MOCK=true: для chat массив реплик, для chatJson готовый объект.
+export type ChatOptions = { system?: string; maxTokens?: number; mock?: unknown };
 
 const mock = () => process.env.LLM_MOCK === "true";
 
@@ -28,8 +29,13 @@ const model = () => process.env.LLM_MODEL ?? "claude-sonnet-5-5";
 /** Потоковая реплика: async-итератор кусков текста. */
 export async function* chat(messages: Message[], opts: ChatOptions = {}): AsyncGenerator<string> {
   if (mock()) {
+    const replies = (opts.mock as string[] | undefined) ?? MOCK_REPLIES;
     const turn = messages.filter((m) => m.role === "user").length;
-    yield MOCK_REPLIES[turn % MOCK_REPLIES.length];
+    // по словам с паузой, чтобы в демо ответ «печатался»
+    for (const w of replies[(turn - 1 + replies.length) % replies.length].split(/(?<= )/)) {
+      yield w;
+      await new Promise((r) => setTimeout(r, 25));
+    }
     return;
   }
   const stream = api().messages.stream({
@@ -49,7 +55,7 @@ export async function chatJson<T extends z.ZodTypeAny>(
   schema: T,
   opts: ChatOptions = {},
 ): Promise<z.infer<T>> {
-  if (mock()) return schema.parse(MOCK_REVIEW);
+  if (mock()) return schema.parse(opts.mock ?? MOCK_REVIEW);
   let lastErr: unknown;
   for (let i = 0; i < 2; i++) {
     const res = await api().messages.create({
