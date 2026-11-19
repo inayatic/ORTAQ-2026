@@ -22,7 +22,7 @@ export function demoReview(s: Scenario, messages: Message[], facts: string[] = [
   const scores = s.success_criteria.map(({ ru: criterion }, i) => {
     const c = d.criteria[i];
     const hits = student.filter((m) => c.keywords.some((k) => m.toLowerCase().includes(k))).length;
-    const score = Math.min(2, hits);
+    const score = hits ? 2 : 0; // демо не умеет оценивать «частично»: либо сказано, либо нет
     return { criterion, score, comment: score === 2 ? c.good : c.bad };
   });
   const weak = scores.flatMap((x, i) => (x.score < 2 ? [d.criteria[i]] : []));
