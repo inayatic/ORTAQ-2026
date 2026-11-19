@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Best from "./Best";
 import LangSync from "@/lib/LangSync";
 import { loadScenarios } from "@/lib/scenarios";
 import { LANGS, LEVELS, getDict, parseLang } from "@/lib/i18n";
@@ -25,6 +26,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ l
           <li key={s.id} className="rounded border p-3">
             <h2 className="font-semibold">{s.title[lang]}</h2>
             <p className="text-sm">{s.situation[lang]}</p>
+            <Best id={s.id} label={t.best_prev} />
             <form action={`/scenario/${s.id}`} className="mt-2 flex flex-wrap items-end gap-3">
               <input type="hidden" name="lang" value={lang} />
               <label className="text-sm">

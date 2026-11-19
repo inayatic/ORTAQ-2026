@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Dict, Lang, Level } from "@/lib/i18n";
+import { LEVELS, type Dict, type Lang, type Level } from "@/lib/i18n";
+import Link from "next/link";
 import type { Review } from "@/lib/review";
 
 type State = { status: "loading" } | { status: "empty" } | { status: "done"; review: Review; fallback: boolean };
@@ -26,7 +27,16 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
           body: JSON.stringify({ scenarioId, lang, level, messages }),
         });
         if (!res.ok) throw new Error();
-        set({ status: "done", ...(await res.json()) });
+        const data = await res.json();
+        const sc: { score: number }[] = data.review?.scores ?? [];
+        if (!data.fallback && sc.length) {
+          const cur = { score: sc.reduce((a, x) => a + x.score, 0), max: sc.length * 2 };
+          try {
+            const prev = JSON.parse(localStorage.getItem(`ortaq:best:${scenarioId}`) ?? "null");
+            if (!prev || cur.score / cur.max > prev.score / prev.max) localStorage.setItem(`ortaq:best:${scenarioId}`, JSON.stringify(cur));
+          } catch {}
+        }
+        set({ status: "done", ...data });
       } catch {
         set({ status: "done", fallback: true, review: { summary: t.review_fallback, scores: [], mistakes: [], rights: [t.rights_unverified], next_steps: [] } });
       }
@@ -44,6 +54,9 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
   if (state.status === "loading") return <p role="status" className="mt-4">{t.review_loading}</p>;
   if (state.status === "empty") return <p className="mt-4">{t.review_empty}</p>;
   const { review: r, fallback } = state;
+  const good = r.scores.length > 0 && r.scores.reduce((a, x) => a + x.score, 0) >= r.scores.length * 1.6;
+  const harder = LEVELS[Math.min(LEVELS.indexOf(level) + 1, LEVELS.length - 1)];
+  const again = (lv: Level) => `/scenario/${scenarioId}?lang=${lang}&level=${lv}`;
 
   return (
     <div className="mt-4 space-y-6">
@@ -99,6 +112,17 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
             <li key={i}>{x}</li>
           ))}
         </ul>
+      </section>
+      <section className="flex flex-wrap items-center gap-3">
+        {good && harder !== level && <p className="w-full text-sm text-green-800">{t.try_harder}</p>}
+        <Link href={again(level)} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
+          {t.play_again}
+        </Link>
+        {good && harder !== level && (
+          <Link href={again(harder)} className="rounded bg-slate-900 px-3 py-1 text-white focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
+            {t[`level_${harder}`]}
+          </Link>
+        )}
       </section>
       {r.next_steps.length > 0 && (
         <section>

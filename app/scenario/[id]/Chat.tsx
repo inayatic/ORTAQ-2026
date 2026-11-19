@@ -13,12 +13,17 @@ const ERRORS: Record<string, keyof Dict> = {
   turn_limit: "limit_reached",
 };
 
+// Метка [[GOAL]] — сигнал модели «цель достигнута»; скрываем её, в том числе недописанную в потоке.
+const GOAL = /\[\[GOAL\]\]/;
+const show = (r: string) => r.replace(/\s*\[\[[A-Z]*\]?\]?$/, "").replace(GOAL, "").trim();
+
 export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; maxTurns: number; t: Dict }) {
   const { t } = p;
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [goal, setGoal] = useState(false);
   const turns = messages.filter((m) => m.role === "user").length;
   const done = turns >= p.maxTurns;
 
@@ -56,8 +61,9 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
         const { done: end, value } = await reader.read();
         if (end) break;
         reply += dec.decode(value, { stream: true });
-        setMessages([...history, { role: "assistant", content: reply }]);
+        setMessages([...history, { role: "assistant", content: show(reply) }]);
       }
+      if (GOAL.test(reply)) setGoal(true);
     } catch {
       setError(t.err_generic);
     } finally {
@@ -87,6 +93,11 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
       {error && (
         <p role="alert" className="mt-2 text-sm text-red-700">
           {error}
+        </p>
+      )}
+      {goal && (
+        <p role="status" className="mt-2 rounded bg-green-50 p-2 text-sm text-green-900">
+          {t.goal_reached}
         </p>
       )}
       {done && <p className="mt-2 text-sm">{t.limit_reached}</p>}
