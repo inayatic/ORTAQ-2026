@@ -1,0 +1,23 @@
+# Render Blueprint: New + → Blueprint → выбрать репозиторий. Автодеплой при каждом пуше в ветку ниже.
+services:
+  - type: web
+    name: ortaq-2026
+    runtime: node
+    plan: free # shortcut: free усыпляет сервис и сбрасывает SQLite при перезапуске; на защиту взять starter и разбудить заранее
+    branch: claude/new-session-vmr855
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /about
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: LLM_MODEL
+        value: claude-sonnet-5-5
+      - key: STORE_TRANSCRIPTS
+        value: "false"
+      # Вводятся в панели Render, в репозиторий не попадают:
+      - key: LLM_MOCK # true = демо без ИИ, false = реальная модель
+        sync: false
+      - key: LLM_API_KEY # нужен только при LLM_MOCK=false
+        sync: false
