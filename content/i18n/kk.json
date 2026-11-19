@@ -21,6 +21,19 @@
   "err_rate": "TODO-VERIFY: сұраныс тым көп. Бір минут күтіңіз.",
   "err_llm": "TODO-VERIFY: жауап келмеді. Қайта жіберіңіз.",
   "err_generic": "TODO-VERIFY: қате шықты. Қайталап көріңіз.",
-  "review_soon": "TODO-VERIFY: талдау келесі кезеңде болады.",
-  "back": "← Сценарийлерге"
+  "back": "← Сценарийлерге",
+  "review_title": "TODO-VERIFY: әңгімені талдау",
+  "review_loading": "TODO-VERIFY: талдау дайындалуда…",
+  "review_summary": "TODO-VERIFY: қорытынды",
+  "review_scores": "TODO-VERIFY: өлшемдер",
+  "review_mistakes": "TODO-VERIFY: қателер мен жақсы нұсқалар",
+  "review_quote": "TODO-VERIFY: сіз айттыңыз",
+  "review_better": "TODO-VERIFY: былай жақсы",
+  "review_rights": "TODO-VERIFY: сіздің құқықтарыңыз",
+  "review_steps": "TODO-VERIFY: келесі қадамдар",
+  "review_retry": "TODO-VERIFY: қайталау",
+  "review_empty": "TODO-VERIFY: талдайтын әңгіме жоқ.",
+  "review_fallback": "TODO-VERIFY: талдау дайындалмады. Қайталап көріңіз.",
+  "rights_unverified": "TODO-VERIFY: бұл тақырып бойынша құқықтық анықтама әлі тексерілмеген. Заңгерден нақтылаңыз.",
+  "review_none": "TODO-VERIFY: дәйексөзі бар қате табылмады."
 }

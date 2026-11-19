@@ -21,6 +21,19 @@
   "err_rate": "Too many requests. Wait a minute and try again.",
   "err_llm": "No reply came back. Press “Send” again.",
   "err_generic": "Something went wrong. Please try again.",
-  "review_soon": "The conversation review arrives in the next stage.",
-  "back": "← Back to scenarios"
+  "back": "← Back to scenarios",
+  "review_title": "Conversation review",
+  "review_loading": "Preparing the review…",
+  "review_summary": "Summary",
+  "review_scores": "Criteria",
+  "review_mistakes": "Mistakes and better phrasing",
+  "review_quote": "You said",
+  "review_better": "Better",
+  "review_rights": "Your rights",
+  "review_steps": "Next steps",
+  "review_retry": "Retry review",
+  "review_empty": "No conversation to review. Have the conversation first.",
+  "review_fallback": "The review could not be prepared. Press “Retry review”.",
+  "rights_unverified": "The legal reference for this topic is not verified yet, so we do not cite specific rules. Check them with a lawyer or a university legal clinic.",
+  "review_none": "No mistakes with quotes found."
 }

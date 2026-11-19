@@ -19,8 +19,14 @@ export function checkInput(text: string): InputError | null {
   return null;
 }
 
-// Персонаж не называет статьи (это работа разбора по справке). shortcut: фильтр по куску потока, номер, разрезанный границей чанков, пройдёт; усилить при буферизации.
-export const filterOutput = (text: string) => text.replace(/ст(атья|атьи|атье|атью|\.)\s*\d+[\d.\-]*/gi, "[…]");
+// Любая ссылка на статью (рус/англ/каз), кроме разрешённых справкой, заменяется на «[…]».
+// shortcut: в потоке фильтр работает по куску, номер, разрезанный границей чанков, пройдёт; усилить буферизацией.
+const ARTICLE = /(?<!\p{L})(?:ст(?:атья|атьи|атье|атью|\.)|art(?:icle|\.)|бап)\s*\d+[\d.\-]*|\d+\s*-?\s*бап/giu;
+const norm = (s: string) => s.toLowerCase().replace(/\s+/g, "");
+export const articlesIn = (text: string) => new Set((text.match(ARTICLE) ?? []).map(norm));
+export const stripArticles = (text: string, allowed: Set<string> = new Set()) =>
+  text.replace(ARTICLE, (m) => (allowed.has(norm(m)) ? m : "[…]"));
+export const filterOutput = (text: string) => stripArticles(text);
 
 // shortcut: in-memory на один процесс, при нескольких инстансах заменить на общее хранилище.
 const hits = new Map<string, number[]>();

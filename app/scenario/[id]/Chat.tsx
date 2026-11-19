@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Dict, Lang, Level } from "@/lib/i18n";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -21,6 +21,14 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
   const [error, setError] = useState("");
   const turns = messages.filter((m) => m.role === "user").length;
   const done = turns >= p.maxTurns;
+
+  // Переписка живёт только в браузере; страница разбора читает её отсюда.
+  useEffect(() => {
+    if (!messages.length) return;
+    try {
+      sessionStorage.setItem(`ortaq:${p.scenarioId}`, JSON.stringify(messages));
+    } catch {}
+  }, [messages, p.scenarioId]);
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
