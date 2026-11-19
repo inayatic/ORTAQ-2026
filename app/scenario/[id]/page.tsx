@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Header from "@/app/Header";
+import { Alert } from "@/app/ui";
 import LangSync from "@/lib/LangSync";
 import { notFound } from "next/navigation";
 import { getScenario } from "@/lib/scenarios";
@@ -22,18 +24,31 @@ export default async function ScenarioPage({
   const t = getDict(lang);
   return (
     <main>
-      <LangSync lang={lang} />
+      <LangSync lang={lang} title={`${s.title[lang]} — ${t.title}`} />
+      <Header lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>
-      <p className="mt-2 rounded bg-amber-50 p-2 text-sm text-amber-900">{t.disclaimer}</p>
-      {process.env.LLM_MOCK === "true" && <p role="note" className="mt-2 rounded bg-sky-50 p-2 text-sm text-sky-900">{t.demo_banner}</p>}
-      <h1 className="mt-3 text-xl font-bold">{s.title[lang]}</h1>
-      <p className="text-sm">{s.situation[lang]}</p>
-      <p className="mt-1 text-sm">
-        <b>{t.goal}:</b> {s.student_goal[lang]}
-      </p>
-      <Chat scenarioId={s.id} level={level} lang={lang} maxTurns={s.max_turns} t={t} hints={s.hints.map((h) => ({ tip: h.tip[lang], phrase: h.phrase[lang] }))} hintsOn={sp.hints !== "off"} />
+      <div className="mt-2 flex flex-wrap gap-1">
+        <Alert tone="warning" compact>
+          {t.disclaimer_short}
+        </Alert>
+        {process.env.LLM_MOCK === "true" && <Alert compact>{t.demo_badge}</Alert>}
+      </div>
+      <Chat
+        scenarioId={s.id}
+        level={level}
+        lang={lang}
+        maxTurns={s.max_turns}
+        t={t}
+        title={s.title[lang]}
+        icon={s.icon}
+        who={s.character.display[lang]}
+        situation={s.situation[lang]}
+        goal={s.student_goal[lang]}
+        hints={s.hints.map((h) => ({ tip: h.tip[lang], phrase: h.phrase[lang] }))}
+        hintsOn={sp.hints !== "off"}
+      />
     </main>
   );
 }

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { LEVELS, type Dict, type Lang, type Level } from "@/lib/i18n";
 import Link from "next/link";
+import { Card, btn } from "@/app/ui";
 import type { Review } from "@/lib/review";
 
 type State = { status: "loading" } | { status: "empty" } | { status: "done"; review: Review; fallback: boolean };
@@ -62,13 +63,33 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
   const harder = LEVELS[Math.min(LEVELS.indexOf(level) + 1, LEVELS.length - 1)];
   const again = (lv: Level, hints = true) => `/scenario/${scenarioId}?lang=${lang}&level=${lv}${hints ? "" : "&hints=off"}`;
 
+  const sum = r.scores.reduce((a, x) => a + x.score, 0);
+  const max = r.scores.length * 2;
+  const verdict = sum >= max * 0.8 ? t.verdict_good : sum >= max * 0.5 ? t.verdict_mid : t.verdict_low;
+  const mark = (n: number) => (n === 2 ? { i: "✓", c: "text-green-700", b: "bg-green-600" } : n === 1 ? { i: "~", c: "text-amber-700", b: "bg-amber-500" } : { i: "✗", c: "text-red-700", b: "bg-red-500" });
+
   return (
-    <div className="mt-4 space-y-6">
+    <div className="mt-4 space-y-5">
+      {r.scores.length > 0 && (
+        <Card className="flex items-center gap-4">
+          <div className="text-center">
+            <p className="text-sm text-slate-600">{t.score_title}</p>
+            <p className="text-4xl font-bold text-brand-700">
+              {sum}
+              <span className="text-xl text-slate-500">
+                {" "}
+                {t.score_of} {max}
+              </span>
+            </p>
+          </div>
+          <p className="flex-1">{verdict}</p>
+        </Card>
+      )}
       <section>
         <h2 className="font-semibold">{t.review_summary}</h2>
         <p>{r.summary}</p>
         {fallback && (
-          <button onClick={retry} className="mt-2 rounded bg-slate-900 px-3 py-1 text-white focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
+          <button onClick={retry} className={`${btn.primary} mt-2`}>
             {t.review_retry}
           </button>
         )}
@@ -76,17 +97,25 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
       {r.scores.length > 0 && (
         <section>
           <h2 className="font-semibold">{t.review_scores}</h2>
-          <ul className="space-y-2">
-            {r.scores.map((s, i) => (
-              <li key={i}>
-                <div className="flex items-center gap-2">
-                  <span className="flex-1">{labels[s.criterion] ?? s.criterion}</span>
-                  <meter min={0} max={2} value={s.score} aria-label={labels[s.criterion] ?? s.criterion} className="w-24" />
-                  <span>{s.score}/2</span>
-                </div>
-                <p className="text-sm text-slate-700">{s.comment}</p>
-              </li>
-            ))}
+          <ul className="mt-2 space-y-3">
+            {r.scores.map((s, i) => {
+              const m = mark(s.score);
+              return (
+                <li key={i}>
+                  <div className="flex items-center gap-2">
+                    <span aria-hidden className={`w-5 text-center font-bold ${m.c}`}>
+                      {m.i}
+                    </span>
+                    <span className="min-w-0 flex-1">{labels[s.criterion] ?? s.criterion}</span>
+                    <div role="img" aria-label={`${s.score}/2`} className="h-2 w-14 shrink-0 sm:w-24 overflow-hidden rounded-full bg-slate-200">
+                      <div className={`h-full ${m.b}`} style={{ width: `${(s.score / 2) * 100}%` }} />
+                    </div>
+                    <span className="w-8 shrink-0 text-right text-sm">{s.score}/2</span>
+                  </div>
+                  <p className="ml-7 text-sm text-slate-700">{s.comment}</p>
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
@@ -94,43 +123,32 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
         <section>
           <h2 className="font-semibold">{t.review_mistakes}</h2>
           {r.mistakes.length === 0 && <p className="text-sm">{t.review_none}</p>}
-          <ul className="space-y-3">
+          <ul className="mt-2 space-y-3">
             {r.mistakes.map((m, i) => (
-              <li key={i} className="rounded border p-3">
-                <p className="text-sm">
+              <li key={i} className="space-y-2">
+                <p className="rounded-xl border-l-4 border-red-400 bg-red-50 px-3 py-2 text-sm">
                   {t.review_quote}: <q>{m.quote}</q>
                 </p>
-                <p>{m.problem}</p>
-                <p className="text-green-800">
-                  {t.review_better}: {m.better_phrase}
+                <p className="px-1 text-sm">{m.problem}</p>
+                <p className="rounded-xl border-l-4 border-green-500 bg-green-50 px-3 py-2 text-sm">
+                  <b>{t.review_better}:</b> {m.better_phrase}
                 </p>
               </li>
             ))}
           </ul>
         </section>
       )}
-      <section>
-        <h2 className="font-semibold">{t.review_rights}</h2>
-        <ul className="list-disc pl-5">
+      <Card>
+        <h2 className="flex items-center gap-2 font-semibold">
+          <span aria-hidden>🛡️</span> {t.review_rights}
+        </h2>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
           {r.rights.map((x, i) => (
             <li key={i}>{x}</li>
           ))}
         </ul>
-      </section>
-      <section className="flex flex-wrap items-center gap-3">
-        {good && harder !== level && <p className="w-full text-sm text-green-800">{t.try_harder}</p>}
-        <Link href={again(level)} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
-          {t.play_again}
-        </Link>
-        <Link href={again(level, false)} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
-          {t.play_no_hints}
-        </Link>
-        {good && harder !== level && (
-          <Link href={again(harder)} className="rounded bg-slate-900 px-3 py-1 text-white focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
-            {t[`level_${harder}`]}
-          </Link>
-        )}
-      </section>
+        <p className="mt-3 text-xs text-slate-600">{t.rights_source}</p>
+      </Card>
       {r.next_steps.length > 0 && (
         <section>
           <h2 className="font-semibold">{t.review_steps}</h2>
@@ -141,6 +159,23 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
           </ul>
         </section>
       )}
+      <section className="flex flex-wrap items-center gap-3">
+        {good && harder !== level && <p className="w-full text-sm text-green-800">{t.try_harder}</p>}
+        <Link href={again(level)} className={btn.primary}>
+          {t.play_again}
+        </Link>
+        <Link href={`/scenario/${scenarioId}/template?lang=${lang}`} className={btn.secondary}>
+          {t.template_btn}
+        </Link>
+        <Link href={again(level, false)} className={btn.secondary}>
+          {t.play_no_hints}
+        </Link>
+        {good && harder !== level && (
+          <Link href={again(harder)} className={btn.secondary}>
+            {t[`level_${harder}`]}
+          </Link>
+        )}
+      </section>
     </div>
   );
 }

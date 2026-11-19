@@ -21,6 +21,11 @@
       "soft": "Вежливо, уклончиво, соглашается на мелкие уступки.",
       "stubborn": "Настаивает на своём, повторяет аргументы, уходит от документов.",
       "aggressive": "Говорит резко и торопит, но без оскорблений и угроз."
+    },
+    "display": {
+      "ru": "Арендодатель Ерлан",
+      "kk": "Үй иесі Ерлан",
+      "en": "Landlord Yerlan"
     }
   },
   "student_goal": {
@@ -130,5 +135,6 @@
         "en": "If the deposit is not returned by then, I will file a written request and contact a legal clinic."
       }
     }
-  ]
+  ],
+  "icon": "🏠"
 }

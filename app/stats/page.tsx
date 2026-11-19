@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Header from "../Header";
+import { Card } from "../ui";
 import LangSync from "@/lib/LangSync";
 import { getStats } from "@/lib/db";
 import { getDict, parseLang } from "@/lib/i18n";
@@ -17,16 +19,17 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   const title = (id: string) => loadScenarios().find((s) => s.id === id)?.title[lang] ?? id;
   return (
     <main>
-      <LangSync lang={lang} />
+      <LangSync lang={lang} title={`${t.stats_title} — ${t.title}`} />
+      <Header lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>
-      <h1 className="mt-3 text-xl font-bold">{t.stats_title}</h1>
+      <h1 className="mt-3 text-2xl font-bold">{t.stats_title}</h1>
       <p className="text-sm text-slate-600">{t.stats_note}</p>
       {st.sessions.length === 0 && <p className="mt-4">{t.stats_empty}</p>}
       {st.sessions.length > 0 && (
         <div className="mt-4 space-y-6">
-          <section>
+          <Card>
             <h2 className="font-semibold">{t.stats_sessions}</h2>
             <ul className="list-disc pl-5">
               {st.sessions.map((r) => (
@@ -35,8 +38,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
-          </section>
-          <section>
+          </Card>
+          <Card>
             <h2 className="font-semibold">{t.stats_hints}</h2>
             <ul className="list-disc pl-5">
               {st.hints.map((r) => (
@@ -45,8 +48,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
-          </section>
-          <section>
+          </Card>
+          <Card>
             <h2 className="font-semibold">{t.stats_mistakes}</h2>
             <ul className="list-disc pl-5">
               {st.mistakes.map((r) => (
@@ -55,8 +58,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
-          </section>
-          <section>
+          </Card>
+          <Card>
             <h2 className="font-semibold">{t.stats_criteria}</h2>
             <ul className="list-disc pl-5">
               {st.criteria.map((r) => (
@@ -65,7 +68,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
-          </section>
+          </Card>
         </div>
       )}
     </main>

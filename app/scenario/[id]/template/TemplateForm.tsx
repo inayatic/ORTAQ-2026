@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { btn as b } from "@/app/ui";
 import type { Dict } from "@/lib/i18n";
 import { fieldsOf, render } from "@/lib/template";
 
@@ -20,7 +21,7 @@ export default function TemplateForm({ id, tpl, t }: { id: string; tpl: string; 
     a.click();
     URL.revokeObjectURL(url);
   }
-  const btn = "rounded bg-slate-900 px-3 py-1 text-white focus:outline-2 focus:outline-offset-2 focus:outline-slate-900";
+  const btn = b.primary;
 
   return (
     <div className="mt-4 grid gap-6 md:grid-cols-2">
@@ -34,7 +35,7 @@ export default function TemplateForm({ id, tpl, t }: { id: string; tpl: string; 
               setCopied(false);
               setValues({ ...values, [f]: e.target.value });
             },
-            className: "mt-1 w-full rounded border p-2 focus:outline-2 focus:outline-slate-900",
+            className: "mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2",
           };
           return (
             <div key={f}>
@@ -48,7 +49,7 @@ export default function TemplateForm({ id, tpl, t }: { id: string; tpl: string; 
       </form>
       <section aria-label={t.preview}>
         <h2 className="font-semibold">{t.preview}</h2>
-        <pre className="mt-1 whitespace-pre-wrap rounded border bg-slate-50 p-3 text-sm">{text}</pre>
+        <pre className="mt-1 whitespace-pre-wrap rounded-xl border border-slate-200 bg-white p-3 text-sm">{text}</pre>
         <div className="mt-2 flex gap-2">
           <button onClick={copy} className={btn}>
             {copied ? t.copied : t.copy}

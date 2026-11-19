@@ -22,6 +22,11 @@
       "soft": "Дружелюбно, отшучивается, обещает «разобраться потом».",
       "stubborn": "Повторяет, что так принято, и переводит разговор на «опыт и рекомендации».",
       "aggressive": "Раздражается, напоминает, что стажёров много, но без оскорблений и угроз."
+    },
+    "display": {
+      "ru": "Руководитель Марат",
+      "kk": "Жетекші Марат",
+      "en": "Manager Marat"
     }
   },
   "student_goal": {
@@ -136,5 +141,6 @@
         "en": "Until the terms are confirmed in writing, I am not ready to keep working. I expect confirmation by the end of the week."
       }
     }
-  ]
+  ],
+  "icon": "💼"
 }

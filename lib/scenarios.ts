@@ -8,9 +8,11 @@ const tr = z.object({ ru: z.string(), kk: z.string(), en: z.string() });
 export const scenarioSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   title: tr,
+  icon: z.string().default("💬"),
   situation: tr,
   character: z.object({
     name: z.string(),
+    display: tr, // имя в шапке чата
     goal: z.string(),
     tactics: z.array(z.string()).min(1),
     levels: z.object({ soft: z.string(), stubborn: z.string(), aggressive: z.string() }),

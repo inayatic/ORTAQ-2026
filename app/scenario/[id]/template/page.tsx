@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Header from "@/app/Header";
+import { Alert } from "@/app/ui";
 import LangSync from "@/lib/LangSync";
 import { notFound } from "next/navigation";
 import { getScenario, getTemplate } from "@/lib/scenarios";
@@ -22,16 +24,19 @@ export default async function TemplatePage({
   const tpl = getTemplate(s, lang);
   return (
     <main>
-      <LangSync lang={lang} />
+      <LangSync lang={lang} title={`${t.template_title} — ${t.title}`} />
+      <Header lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>
-      <p className="mt-2 rounded bg-amber-50 p-2 text-sm text-amber-900">{t.disclaimer}</p>
-      <h1 className="mt-3 text-xl font-bold">
+      <Alert tone="warning" className="mt-2">
+        {t.disclaimer}
+      </Alert>
+      <h1 className="mt-3 text-2xl font-bold">
         {t.template_title}: {s.title[lang]}
       </h1>
       <p className="text-sm">{t.template_note}</p>
-      {tpl.lang !== lang && <p className="mt-1 text-sm text-amber-900">{t.template_ru_only}</p>}
+      {tpl.lang !== lang && <Alert tone="warning" className="mt-2">{t.template_ru_only}</Alert>}
       <TemplateForm id={s.id} tpl={tpl.text} t={t} />
     </main>
   );
