@@ -79,7 +79,7 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
         {messages.length === 0 && <p className="text-sm text-slate-600">{t.first_hint}</p>}
         {messages.map((m, i) => (
           <p key={i} className={m.role === "user" ? "text-right" : ""}>
-            <span className={`inline-block rounded px-3 py-1 ${m.role === "user" ? "bg-slate-900 text-white" : "bg-slate-100"}`}>{m.content || "…"}</span>
+            <span className={`inline-block max-w-full break-words rounded px-3 py-1 ${m.role === "user" ? "bg-slate-900 text-white" : "bg-slate-100"}`}>{m.content || "…"}</span>
           </p>
         ))}
         {busy && <p className="text-sm text-slate-600">{t.thinking}</p>}
@@ -100,7 +100,7 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
           onChange={(e) => setText(e.target.value)}
           placeholder={t.placeholder}
           disabled={busy || done}
-          className="flex-1 rounded border p-2 focus:outline-2 focus:outline-slate-900"
+          className="min-w-0 flex-1 rounded border p-2 focus:outline-2 focus:outline-slate-900"
         />
         <button disabled={busy || done} className="rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-50 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
           {t.send}

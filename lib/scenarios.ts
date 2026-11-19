@@ -14,7 +14,7 @@ export const scenarioSchema = z.object({
     tactics: z.array(z.string()).min(1),
     levels: z.object({ soft: z.string(), stubborn: z.string(), aggressive: z.string() }),
   }),
-  student_goal: z.string(),
+  student_goal: tr,
   success_criteria: z.array(z.string()).min(1),
   legal_ref: z.string(),
   template: z.string(),

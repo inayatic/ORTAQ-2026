@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LangSync from "@/lib/LangSync";
 import { notFound } from "next/navigation";
 import { getScenario } from "@/lib/scenarios";
 import { getDict, parseLang, parseLevel } from "@/lib/i18n";
@@ -21,6 +22,7 @@ export default async function ScenarioPage({
   const t = getDict(lang);
   return (
     <main>
+      <LangSync lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>
@@ -28,7 +30,7 @@ export default async function ScenarioPage({
       <h1 className="mt-3 text-xl font-bold">{s.title[lang]}</h1>
       <p className="text-sm">{s.situation[lang]}</p>
       <p className="mt-1 text-sm">
-        <b>{t.goal}:</b> {s.student_goal}
+        <b>{t.goal}:</b> {s.student_goal[lang]}
       </p>
       <Chat scenarioId={s.id} level={level} lang={lang} maxTurns={s.max_turns} t={t} />
     </main>

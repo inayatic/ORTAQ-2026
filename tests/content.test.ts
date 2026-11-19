@@ -41,3 +41,17 @@ describe("статистика", () => {
     expect(getScenario("rent-deposit")).toBeTruthy();
   });
 });
+
+describe("языки", () => {
+  it("словари совпадают по ключам и не пусты", () => {
+    const ru = Object.keys(getDict("ru")).sort();
+    for (const l of LANGS) {
+      const d = getDict(l) as Record<string, string>;
+      expect(Object.keys(d).sort()).toEqual(ru);
+      for (const v of Object.values(d)) expect(v.trim()).not.toBe("");
+    }
+  });
+  it("сценарии переведены на все языки без заглушек", () => {
+    for (const s of loadScenarios()) for (const l of LANGS) for (const v of [s.title[l], s.situation[l]]) expect(v).not.toMatch(/TODO-VERIFY/);
+  });
+});

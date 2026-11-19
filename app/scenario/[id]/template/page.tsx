@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LangSync from "@/lib/LangSync";
 import { notFound } from "next/navigation";
 import { getScenario, getTemplate } from "@/lib/scenarios";
 import { getDict, parseLang } from "@/lib/i18n";
@@ -20,6 +21,7 @@ export default async function TemplatePage({
   const t = getDict(lang);
   return (
     <main>
+      <LangSync lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>

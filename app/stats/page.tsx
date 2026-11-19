@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LangSync from "@/lib/LangSync";
 import { getStats } from "@/lib/db";
 import { getDict, parseLang } from "@/lib/i18n";
 import { loadScenarios } from "@/lib/scenarios";
@@ -12,6 +13,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   const title = (id: string) => loadScenarios().find((s) => s.id === id)?.title[lang] ?? id;
   return (
     <main>
+      <LangSync lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>

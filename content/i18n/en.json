@@ -55,5 +55,12 @@
   "stats_mistakes": "Common mistakes",
   "stats_criteria": "Average score by criterion (0–2)",
   "stats_empty": "No data yet.",
-  "stats_note": "Anonymous aggregates only: dialogue texts are not stored."
+  "stats_note": "Anonymous aggregates only: dialogue texts are not stored.",
+  "about_link": "About",
+  "about_title": "About the project",
+  "about_how": "How it works: an AI plays a pushy counterpart and you practice defending your rights. After the dialogue you get a review: what worked, your mistakes (with your own quotes), better phrasing and a written-application template.",
+  "about_limits": "Limits: this is a training tool, not legal advice. The AI can be wrong. Legal facts come only from reference notes written and checked by a human; until a note is verified, article numbers and deadlines are not named.",
+  "about_sources": "Sources: the official database of legal acts of Kazakhstan — adilet.zan.kz.",
+  "about_privacy": "Privacy: we do not ask for names or contacts, dialogue texts are not stored, only anonymous statistics are kept.",
+  "about_help": "Real help: your university's legal clinic and official state channels. Verified contacts will be added before publication."
 }

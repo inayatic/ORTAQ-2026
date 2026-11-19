@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LangSync from "@/lib/LangSync";
 import { notFound } from "next/navigation";
 import { getScenario } from "@/lib/scenarios";
 import { getDict, parseLang, parseLevel } from "@/lib/i18n";
@@ -21,6 +22,7 @@ export default async function ReviewPage({
   const t = getDict(lang);
   return (
     <main>
+      <LangSync lang={lang} />
       <Link href={`/?lang=${lang}`} className="text-sm underline">
         {t.back}
       </Link>

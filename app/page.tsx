@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LangSync from "@/lib/LangSync";
 import { loadScenarios } from "@/lib/scenarios";
 import { LANGS, LEVELS, getDict, parseLang } from "@/lib/i18n";
 
@@ -9,6 +10,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ l
   const t = getDict(lang);
   return (
     <main>
+      <LangSync lang={lang} />
       <nav aria-label="Language" className="flex gap-3 text-sm">
         {LANGS.map((l) => (
           <Link key={l} href={`/?lang=${l}`} aria-current={l === lang} className={l === lang ? "font-bold underline" : "underline"}>
@@ -45,6 +47,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ l
       <p className="mt-4 text-sm">
         <Link href={`/stats?lang=${lang}`} className="underline">
           {t.stats_link}
+        </Link>
+        {" · "}
+        <Link href={`/about?lang=${lang}`} className="underline">
+          {t.about_link}
         </Link>
       </p>
     </main>
