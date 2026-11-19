@@ -49,32 +49,44 @@ export async function* chat(messages: Message[], opts: ChatOptions = {}): AsyncG
   }
 }
 
-/** Структурированный ответ через tool use: модель отдаёт объект по схеме, а не текст с JSON (нет проблем с кавычками и обрезкой).
- * Один повтор при невалидном ответе, затем ошибка (запасной ответ — на вызывающем). */
+// Структурированный вывод не принимает числовые ограничения; их проверяет zod после ответа.
+const UNSUPPORTED = ["minimum", "maximum", "minLength", "maxLength", "minItems", "maxItems", "pattern", "$schema"];
+const strip = (x: unknown): unknown =>
+  Array.isArray(x) ? x.map(strip) : x && typeof x === "object" ? Object.fromEntries(Object.entries(x).filter(([k]) => !UNSUPPORTED.includes(k)).map(([k, v]) => [k, strip(v)])) : x;
+
+/** Структурированный ответ: JSON по схеме (output_config.format). Если провайдер отклонил такой запрос (400),
+ * переходим на «JSON в тексте» со схемой в промпте. До 3 попыток, затем ошибка (запасной ответ — на вызывающем). */
 export async function chatJson<T extends z.ZodTypeAny>(
   messages: Message[],
   schema: T,
   opts: ChatOptions = {},
 ): Promise<z.infer<T>> {
   if (mock()) return schema.parse(opts.mock ?? MOCK_REVIEW);
-  const { $schema: _, ...input_schema } = z.toJSONSchema(schema) as Record<string, unknown>;
-  const tool = { name: "submit", description: "Передай готовый результат.", input_schema: input_schema as Anthropic.Tool.InputSchema };
+  const jsonSchema = strip(z.toJSONSchema(schema)) as { [key: string]: unknown };
+  let structured = true;
   let lastErr: unknown;
-  for (let i = 0; i < 2; i++) {
-    const res = await api().messages.create({
-      model: model(),
-      system: opts.system,
-      max_tokens: opts.maxTokens ?? 4000,
-      tools: [tool],
-      tool_choice: { type: "tool", name: "submit" },
-      messages,
-    });
-    const block = res.content.find((b) => b.type === "tool_use");
-    const parsed = schema.safeParse(block && block.type === "tool_use" ? block.input : undefined);
-    if (parsed.success) return parsed.data;
-    // Только причина, без содержимого диалога.
-    console.error("chatJson invalid", { stop: res.stop_reason, issues: parsed.error.issues.map((x) => `${x.path.join(".")}:${x.code}`) });
-    lastErr = parsed.error;
+  for (let i = 0; i < 3; i++) {
+    try {
+      const res = await api().messages.create({
+        model: model(),
+        system: structured ? opts.system : `${opts.system ?? ""}\nОтветь только JSON без пояснений и без markdown, строго по схеме: ${JSON.stringify(jsonSchema)}`,
+        max_tokens: opts.maxTokens ?? 4000,
+        ...(structured ? { output_config: { format: { type: "json_schema" as const, schema: jsonSchema } } } : {}),
+        messages,
+      });
+      const text = res.content.map((b) => (b.type === "text" ? b.text : "")).join("");
+      const parsed = schema.safeParse(JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)));
+      if (parsed.success) return parsed.data;
+      // Только причина, без содержимого диалога.
+      console.error("chatJson invalid", { stop: res.stop_reason, issues: parsed.error.issues.map((x) => `${x.path.join(".")}:${x.code}`) });
+      lastErr = parsed.error;
+    } catch (e) {
+      lastErr = e;
+      if (structured && e instanceof Anthropic.APIError && e.status === 400) {
+        console.error("structured output rejected, falling back to text JSON:", e.message.slice(0, 200));
+        structured = false;
+      } else console.error("chatJson failed:", e instanceof Error ? e.message.slice(0, 200) : e);
+    }
   }
   throw lastErr;
 }
