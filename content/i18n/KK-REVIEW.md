@@ -14,3 +14,4 @@
 
 - `content/templates/*.kk.md` — три шаблона заявлений на казахском (черновик).
 - Строки `goal_reached`, `best_prev`, `play_again`, `try_harder`, `template_ru_only` в `kk.json`.
+- Строки подсказок (hints в content/scenarios/*.json kk-поля, hint_*, hints_*, play_no_hints в kk.json).

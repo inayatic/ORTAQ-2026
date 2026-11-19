@@ -15,6 +15,12 @@ describe.each(loadScenarios().map((s) => [s.id, s] as const))("сценарий 
     for (const f of facts) expect(f).not.toContain("TODO-VERIFY");
     expect(facts.some((f) => /ст\.\s*\d/.test(f))).toBe(true);
   });
+  it("подсказки: на трёх языках, без скобочных заготовок и без номеров статей", () => {
+    for (const h of s.hints) for (const l of LANGS) for (const x of [h.tip[l], h.phrase[l]]) {
+      expect(x.trim()).not.toBe("");
+      expect(x).not.toMatch(/[\[\]{}]|(ст\.|стать[яи]|бап)\s*\d/i);
+    }
+  });
   it("шаблон использует только известные поля и не называет статей", () => {
     for (const lang of LANGS) {
       const tpl = getTemplate(s, lang).text;

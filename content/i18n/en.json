@@ -68,5 +68,11 @@
   "best_prev": "Best result",
   "play_again": "Play again",
   "try_harder": "Good result. Try a harder level.",
-  "template_ru_only": "This template is currently available in Russian only."
+  "template_ru_only": "This template is currently available in Russian only.",
+  "hint_title": "Hint",
+  "hint_use": "Insert phrase",
+  "hints_on": "Hints: on",
+  "hints_off": "Hints: off",
+  "hint_practice": "Now try without hints",
+  "play_no_hints": "Play again without hints"
 }

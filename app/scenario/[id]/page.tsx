@@ -12,7 +12,7 @@ export default async function ScenarioPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ lang?: string; level?: string }>;
+  searchParams: Promise<{ lang?: string; level?: string; hints?: string }>;
 }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const s = getScenario(id);
@@ -33,7 +33,7 @@ export default async function ScenarioPage({
       <p className="mt-1 text-sm">
         <b>{t.goal}:</b> {s.student_goal[lang]}
       </p>
-      <Chat scenarioId={s.id} level={level} lang={lang} maxTurns={s.max_turns} t={t} />
+      <Chat scenarioId={s.id} level={level} lang={lang} maxTurns={s.max_turns} t={t} hints={s.hints.map((h) => ({ tip: h.tip[lang], phrase: h.phrase[lang] }))} hintsOn={sp.hints !== "off"} />
     </main>
   );
 }

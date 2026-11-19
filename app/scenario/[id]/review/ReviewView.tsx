@@ -56,7 +56,7 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
   const { review: r, fallback } = state;
   const good = r.scores.length > 0 && r.scores.reduce((a, x) => a + x.score, 0) >= r.scores.length * 1.6;
   const harder = LEVELS[Math.min(LEVELS.indexOf(level) + 1, LEVELS.length - 1)];
-  const again = (lv: Level) => `/scenario/${scenarioId}?lang=${lang}&level=${lv}`;
+  const again = (lv: Level, hints = true) => `/scenario/${scenarioId}?lang=${lang}&level=${lv}${hints ? "" : "&hints=off"}`;
 
   return (
     <div className="mt-4 space-y-6">
@@ -117,6 +117,9 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
         {good && harder !== level && <p className="w-full text-sm text-green-800">{t.try_harder}</p>}
         <Link href={again(level)} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
           {t.play_again}
+        </Link>
+        <Link href={again(level, false)} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
+          {t.play_no_hints}
         </Link>
         {good && harder !== level && (
           <Link href={again(harder)} className="rounded bg-slate-900 px-3 py-1 text-white focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">

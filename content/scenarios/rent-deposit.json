@@ -80,5 +80,55 @@
       "en": "other",
       "kk": "басқа"
     }
+  ],
+  "hints": [
+    {
+      "tip": {
+        "ru": "Скажите коротко и ясно, чего вы хотите.",
+        "kk": "Не қалайтыныңызды қысқа және нақты айтыңыз.",
+        "en": "Say briefly and clearly what you want."
+      },
+      "phrase": {
+        "ru": "Здравствуйте. Квартира освобождена, прошу вернуть залог.",
+        "kk": "Сәлеметсіз бе. Пәтер босатылды, кепілақыны қайтаруды сұраймын.",
+        "en": "Hello. I have moved out of the flat and ask you to return the deposit."
+      }
+    },
+    {
+      "tip": {
+        "ru": "Не принимайте «устную договорённость» на слово: попросите основание письменно.",
+        "kk": "«Ауызша келісімді» сөзге сеніп қабылдамаңыз: негіздемені жазбаша сұраңыз.",
+        "en": "Do not accept a \"verbal agreement\" at its word: ask for the reason in writing."
+      },
+      "phrase": {
+        "ru": "На каком основании вы удерживаете залог? Прошу письменно указать причину и расчёт суммы.",
+        "kk": "Кепілақыны қандай негізде ұстап отырсыз? Себебін және соманың есебін жазбаша көрсетуіңізді сұраймын.",
+        "en": "On what basis are you keeping the deposit? Please state the reason and the calculation in writing."
+      }
+    },
+    {
+      "tip": {
+        "ru": "Назовите срок конкретно, числом дней.",
+        "kk": "Мерзімді нақты, күн санымен атаңыз.",
+        "en": "Name a specific deadline, in days."
+      },
+      "phrase": {
+        "ru": "Прошу вернуть залог в течение 5 рабочих дней.",
+        "kk": "Кепілақыны 5 жұмыс күні ішінде қайтаруыңызды сұраймын.",
+        "en": "Please return the deposit within 5 working days."
+      }
+    },
+    {
+      "tip": {
+        "ru": "Скажите, что будет дальше, если срок пройдёт. Не уступайте давлению.",
+        "kk": "Мерзім өтіп кетсе, не болатынын айтыңыз. Қысымға көнбеңіз.",
+        "en": "Say what happens next if the deadline passes. Do not give in to pressure."
+      },
+      "phrase": {
+        "ru": "Если залог не будет возвращён в этот срок, я подам письменное заявление и обращусь в юридическую клинику.",
+        "kk": "Кепілақы осы мерзімде қайтарылмаса, жазбаша өтініш беріп, заң клиникасына жүгінемін.",
+        "en": "If the deposit is not returned by then, I will file a written request and contact a legal clinic."
+      }
+    }
   ]
 }

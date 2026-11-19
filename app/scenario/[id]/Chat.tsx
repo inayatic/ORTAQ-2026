@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Dict, Lang, Level } from "@/lib/i18n";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -17,15 +17,18 @@ const ERRORS: Record<string, keyof Dict> = {
 const GOAL = /\[\[GOAL\]\]/;
 const show = (r: string) => r.replace(/\s*\[\[[A-Z]*\]?\]?$/, "").replace(GOAL, "").trim();
 
-export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; maxTurns: number; t: Dict }) {
+export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; maxTurns: number; t: Dict; hints: { tip: string; phrase: string }[]; hintsOn: boolean }) {
   const { t } = p;
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const input = useRef<HTMLInputElement>(null);
   const [goal, setGoal] = useState(false);
+  const [hintsOn, setHintsOn] = useState(p.hintsOn);
   const turns = messages.filter((m) => m.role === "user").length;
   const done = turns >= p.maxTurns;
+  const hint = hintsOn && !busy && !done ? p.hints[Math.min(turns, p.hints.length - 1)] : null;
 
   // Переписка живёт только в браузере; страница разбора читает её отсюда.
   useEffect(() => {
@@ -77,6 +80,9 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
         <span>
           {t.turn} {turns} {t.of} {p.maxTurns}
         </span>
+        <button type="button" aria-pressed={hintsOn} onClick={() => setHintsOn(!hintsOn)} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
+          {hintsOn ? t.hints_on : t.hints_off}
+        </button>
         <Link href={`/scenario/${p.scenarioId}/review?lang=${p.lang}&level=${p.level}`} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
           {t.finish}
         </Link>
@@ -101,12 +107,27 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
         </p>
       )}
       {done && <p className="mt-2 text-sm">{t.limit_reached}</p>}
+      {hint && (
+        <div className="mt-2 rounded bg-violet-50 p-2 text-sm text-violet-900">
+          <p>
+            <b>{t.hint_title}:</b> {hint.tip}
+          </p>
+          <p className="mt-1 break-words italic">{hint.phrase}</p>
+          <button type="button" onClick={() => {
+              setText(hint.phrase);
+              input.current?.focus();
+            }} className="mt-1 rounded border border-violet-300 px-2 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-violet-900">
+            {t.hint_use}
+          </button>
+        </div>
+      )}
       <form onSubmit={send} className="mt-2 flex gap-2">
         <label className="sr-only" htmlFor="msg">
           {t.placeholder}
         </label>
         <input
           id="msg"
+          ref={input}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t.placeholder}
