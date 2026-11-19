@@ -19,7 +19,7 @@ export default async function About({ searchParams }: { searchParams: Promise<{ 
       </Alert>
       <h1 className="mt-3 text-2xl font-bold">{t.about_title}</h1>
       <Card className="mt-3 space-y-3">
-        {([t.about_how, t.about_limits, t.about_sources, t.about_privacy, t.about_help] as string[]).map((p) => (
+        {([t.about_name, t.about_how, t.about_limits, t.about_sources, t.about_privacy, t.about_help] as string[]).map((p) => (
           <p key={p}>{p}</p>
         ))}
       </Card>

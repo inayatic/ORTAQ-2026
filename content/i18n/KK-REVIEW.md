@@ -16,3 +16,4 @@
 - Строки `goal_reached`, `best_prev`, `play_again`, `try_harder`, `template_ru_only` в `kk.json`.
 - Строки подсказок (hints в content/scenarios/*.json kk-поля, hint_*, hints_*, play_no_hints в kk.json).
 - Редизайн: новые строки в `kk.json` (disclaimer, disclaimer_short, demo_badge, hero_*, how_*, level_desc_*, scenario_time, stats_link, memo_title, ai_label, thinking, finish_confirm, score_*, verdict_*, rights_source, template_btn) и `character.display` в `content/scenarios/*.json`.
+- Название проекта «Айт»: строки `title` и `about_name` в `kk.json`.
