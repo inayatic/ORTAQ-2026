@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 
 const description = "Тренируйте трудные разговоры с ИИ-собеседником и узнайте, как отстаивать свои права. Учебный тренажёр, не юридическая консультация.";
 export const metadata = {
-  title: "Айт: тренажёр трудных разговоров",
+  title: "Aiyt: тренажёр трудных разговоров",
   description,
-  openGraph: { title: "Айт: тренажёр трудных разговоров", description, type: "website" },
+  openGraph: { title: "Aiyt: тренажёр трудных разговоров", description, type: "website" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

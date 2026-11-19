@@ -10,7 +10,7 @@ export default function Header({ lang, pills = false }: { lang: Lang; pills?: bo
           <rect width="32" height="32" rx="8" fill="#0f766e" />
           <path d="M8 10h16v9h-8l-5 4v-4H8z" fill="#fff" />
         </svg>
-        {lang === "en" ? "Aiyt" : "Айт"}
+        Aiyt
       </Link>
       {pills && (
         <nav aria-label="Language" className="flex gap-1 rounded-full bg-slate-200 p-1 text-sm">
