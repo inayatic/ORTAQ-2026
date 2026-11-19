@@ -37,6 +37,16 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
             </ul>
           </section>
           <section>
+            <h2 className="font-semibold">{t.stats_hints}</h2>
+            <ul className="list-disc pl-5">
+              {st.hints.map((r) => (
+                <li key={r.hints}>
+                  {r.hints ? t.stats_with_hints : t.stats_no_hints}: {r.n} / {r.avg} {t.stats_of_two}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section>
             <h2 className="font-semibold">{t.stats_mistakes}</h2>
             <ul className="list-disc pl-5">
               {st.mistakes.map((r) => (

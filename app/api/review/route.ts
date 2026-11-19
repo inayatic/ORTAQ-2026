@@ -9,6 +9,7 @@ const body = z.object({
   scenarioId: z.string(),
   lang: z.enum(LANGS),
   level: z.enum(LEVELS).default("soft"),
+  hints: z.boolean().default(false),
   messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).min(1).max(40),
 });
 
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return fail("bad_request", 400);
-  const { scenarioId, lang, level, messages } = parsed.data;
+  const { scenarioId, lang, level, hints, messages } = parsed.data;
 
   const scenario = getScenario(scenarioId);
   if (!scenario) return fail("unknown_scenario", 404);
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
   const result = await generateReview(scenario, lang, messages);
   if (!result.fallback) {
     recordReview({
-      scenarioId, level, lang, turns: user.length,
+      scenarioId, level, lang, hints, turns: user.length,
       scores: result.review.scores,
       mistakeTags: result.review.mistakes.map((m) => m.tag),
     });

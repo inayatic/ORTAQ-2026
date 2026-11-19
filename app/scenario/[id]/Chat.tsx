@@ -30,6 +30,13 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
   const done = turns >= p.maxTurns;
   const hint = hintsOn && !busy && !done ? p.hints[Math.min(turns, p.hints.length - 1)] : null;
 
+  // Новая попытка: забываем, пользовался ли студент подсказками в прошлый раз.
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem(`ortaq:hints:${p.scenarioId}`);
+    } catch {}
+  }, [p.scenarioId]);
+
   // Переписка живёт только в браузере; страница разбора читает её отсюда.
   useEffect(() => {
     if (!messages.length) return;
@@ -115,6 +122,9 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
           <p className="mt-1 break-words italic">{hint.phrase}</p>
           <button type="button" onClick={() => {
               setText(hint.phrase);
+              try {
+                sessionStorage.setItem(`ortaq:hints:${p.scenarioId}`, "1");
+              } catch {}
               input.current?.focus();
             }} className="mt-1 rounded border border-violet-300 px-2 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-violet-900">
             {t.hint_use}

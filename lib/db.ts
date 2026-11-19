@@ -16,6 +16,9 @@ function getDb() {
         turns INTEGER NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now')));
       CREATE TABLE IF NOT EXISTS review_stats (
         session_id TEXT NOT NULL, criterion TEXT, score INTEGER, mistake_tag TEXT);`);
+    // Старые базы без колонки: hints = 1, если студент вставлял подсказки.
+    if (!db.prepare("PRAGMA table_info(sessions)").all().some((c) => (c as { name: string }).name === "hints"))
+      db.exec("ALTER TABLE sessions ADD COLUMN hints INTEGER NOT NULL DEFAULT 0");
   }
   return db;
 }
@@ -28,6 +31,7 @@ type Rec = {
   level: string;
   lang: string;
   turns: number;
+  hints: boolean;
   scores: { criterion: string; score: number }[];
   mistakeTags: string[];
 };
@@ -38,7 +42,7 @@ export function recordReview(r: Rec): void {
     const d = getDb();
     const id = randomUUID();
     d.transaction(() => {
-      d.prepare("INSERT INTO sessions (id, scenario_id, level, lang, turns) VALUES (?,?,?,?,?)").run(id, r.scenarioId, r.level, r.lang, r.turns);
+      d.prepare("INSERT INTO sessions (id, scenario_id, level, lang, turns, hints) VALUES (?,?,?,?,?,?)").run(id, r.scenarioId, r.level, r.lang, r.turns, r.hints ? 1 : 0);
       const ins = d.prepare("INSERT INTO review_stats (session_id, criterion, score, mistake_tag) VALUES (?,?,?,?)");
       for (const s of r.scores) ins.run(id, short(s.criterion), s.score, null);
       for (const t of r.mistakeTags) ins.run(id, null, null, short(t));
@@ -52,6 +56,13 @@ export function getStats() {
   const d = getDb();
   return {
     sessions: d.prepare("SELECT scenario_id, COUNT(*) AS n FROM sessions GROUP BY scenario_id ORDER BY n DESC").all() as { scenario_id: string; n: number }[],
+    // Средняя оценка по критериям (0–2) и число сессий отдельно с подсказками и без.
+    hints: d
+      .prepare(
+        `SELECT s.hints AS hints, COUNT(DISTINCT s.id) AS n, ROUND(AVG(r.score), 2) AS avg FROM sessions s JOIN review_stats r ON r.session_id = s.id
+         WHERE r.criterion IS NOT NULL GROUP BY s.hints ORDER BY s.hints`,
+      )
+      .all() as { hints: number; n: number; avg: number }[],
     mistakes: d
       .prepare(
         `SELECT s.scenario_id, r.mistake_tag AS tag, COUNT(*) AS n FROM review_stats r JOIN sessions s ON s.id = r.session_id

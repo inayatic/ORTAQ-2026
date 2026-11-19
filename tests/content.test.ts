@@ -43,8 +43,8 @@ describe("шаблон", () => {
 
 describe("статистика", () => {
   it("агрегирует ошибки и баллы без текстов", () => {
-    const rec = (tags: string[], score: number) =>
-      recordReview({ scenarioId: "rent-deposit", level: "soft", lang: "ru", turns: 3, scores: [{ criterion: "срок", score }], mistakeTags: tags });
+    const rec = (tags: string[], score: number, hints = false) =>
+      recordReview({ scenarioId: "rent-deposit", level: "soft", lang: "ru", turns: 3, hints, scores: [{ criterion: "срок", score }], mistakeTags: tags });
     rec(["Нет требования", "угроза"], 0);
     rec(["нет требования"], 2);
     const st = getStats();
@@ -52,6 +52,8 @@ describe("статистика", () => {
     expect(st.mistakes[0]).toEqual({ scenario_id: "rent-deposit", tag: "нет требования", n: 2 });
     expect(st.criteria[0].avg).toBe(1);
     expect(getScenario("rent-deposit")).toBeTruthy();
+    rec([], 2, true);
+    expect(getStats().hints).toEqual([{ hints: 0, n: 2, avg: 1 }, { hints: 1, n: 1, avg: 2 }]);
   });
 });
 

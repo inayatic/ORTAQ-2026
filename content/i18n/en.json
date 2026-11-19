@@ -74,5 +74,9 @@
   "hints_on": "Hints: on",
   "hints_off": "Hints: off",
   "hint_practice": "Now try without hints",
-  "play_no_hints": "Play again without hints"
+  "play_no_hints": "Play again without hints",
+  "stats_hints": "Hints and results",
+  "stats_with_hints": "With hints (sessions / average score)",
+  "stats_no_hints": "Without hints (sessions / average score)",
+  "stats_of_two": "out of 2"
 }

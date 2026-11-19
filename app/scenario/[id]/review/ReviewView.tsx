@@ -20,11 +20,15 @@ export default function ReviewView({ scenarioId, lang, level, t, labels }: { sce
         messages = JSON.parse(sessionStorage.getItem(`ortaq:${scenarioId}`) ?? "[]");
       } catch {}
       if (!messages.length) return set({ status: "empty" });
+      let hints = false;
+      try {
+        hints = sessionStorage.getItem(`ortaq:hints:${scenarioId}`) === "1";
+      } catch {}
       try {
         const res = await fetch("/api/review", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ scenarioId, lang, level, messages }),
+          body: JSON.stringify({ scenarioId, lang, level, hints, messages }),
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
