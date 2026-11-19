@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
+import type { Lang } from "./i18n";
 
 const tr = z.object({ ru: z.string(), kk: z.string(), en: z.string() });
 
@@ -35,5 +36,11 @@ export function loadScenarios(): Scenario[] {
 
 export const getScenario = (id: string) => loadScenarios().find((s) => s.id === id);
 
-export const getTemplate = (s: Scenario) =>
-  fs.readFileSync(path.join(process.cwd(), "content/templates", path.basename(s.template)), "utf8");
+/** Шаблон на языке пользователя (`*.kk.md`), если его нет — русский; hasLang говорит, что вышло. */
+export function getTemplate(s: Scenario, lang: Lang = "ru") {
+  const dir = path.join(process.cwd(), "content/templates");
+  const base = path.basename(s.template);
+  const localized = path.join(dir, base.replace(/\.md$/, `.${lang}.md`));
+  const file = lang !== "ru" && fs.existsSync(localized) ? localized : path.join(dir, base);
+  return { text: fs.readFileSync(file, "utf8"), lang: file === localized ? lang : ("ru" as Lang) };
+}

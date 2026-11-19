@@ -19,6 +19,7 @@ export default async function TemplatePage({
   if (!s) notFound();
   const lang = parseLang(sp.lang);
   const t = getDict(lang);
+  const tpl = getTemplate(s, lang);
   return (
     <main>
       <LangSync lang={lang} />
@@ -30,7 +31,8 @@ export default async function TemplatePage({
         {t.template_title}: {s.title[lang]}
       </h1>
       <p className="text-sm">{t.template_note}</p>
-      <TemplateForm id={s.id} tpl={getTemplate(s)} t={t} />
+      {tpl.lang !== lang && <p className="mt-1 text-sm text-amber-900">{t.template_ru_only}</p>}
+      <TemplateForm id={s.id} tpl={tpl.text} t={t} />
     </main>
   );
 }

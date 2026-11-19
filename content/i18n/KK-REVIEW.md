@@ -11,3 +11,6 @@
 Также проверить `success_criteria[].kk` в `content/scenarios/*.json`.
 
 Также проверить `docs/survey-kk.md` (казахская анкета для тестирования со студентами).
+
+- `content/templates/*.kk.md` — три шаблона заявлений на казахском (черновик).
+- Строки `goal_reached`, `best_prev`, `play_again`, `try_harder`, `template_ru_only` в `kk.json`.

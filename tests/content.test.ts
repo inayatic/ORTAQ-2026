@@ -16,10 +16,14 @@ describe.each(loadScenarios().map((s) => [s.id, s] as const))("сценарий 
     expect(facts.some((f) => /ст\.\s*\d/.test(f))).toBe(true);
   });
   it("шаблон использует только известные поля и не называет статей", () => {
-    const tpl = getTemplate(s);
-    for (const f of fieldsOf(tpl)) expect(TEMPLATE_FIELDS as readonly string[]).toContain(f);
-    expect(tpl).not.toMatch(/(ст\.|стать[яи])\s*\d/i);
-    for (const l of LANGS) for (const f of fieldsOf(tpl)) expect(getDict(l)[`f_${f}` as keyof ReturnType<typeof getDict>]).toBeTruthy();
+    for (const lang of LANGS) {
+      const tpl = getTemplate(s, lang).text;
+      for (const f of fieldsOf(tpl)) expect(TEMPLATE_FIELDS as readonly string[]).toContain(f);
+      expect(tpl).not.toMatch(/(ст\.|стать[яи]|бап)\s*\d/i);
+      for (const l of LANGS) for (const f of fieldsOf(tpl)) expect(getDict(l)[`f_${f}` as keyof ReturnType<typeof getDict>]).toBeTruthy();
+    }
+    expect(getTemplate(s, "kk").lang).toBe("kk");
+    expect(fieldsOf(getTemplate(s, "kk").text).sort()).toEqual(fieldsOf(getTemplate(s).text).sort());
   });
 });
 

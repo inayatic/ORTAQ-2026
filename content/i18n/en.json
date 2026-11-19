@@ -67,5 +67,6 @@
   "goal_reached": "Looks like you reached your goal. You can finish and see the review.",
   "best_prev": "Best result",
   "play_again": "Play again",
-  "try_harder": "Good result. Try a harder level."
+  "try_harder": "Good result. Try a harder level.",
+  "template_ru_only": "This template is currently available in Russian only."
 }

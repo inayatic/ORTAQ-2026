@@ -30,12 +30,12 @@
   },
   "success_criteria": [
     {
-      "ru": "потребовал письменное основание",
+      "ru": "Требование письменного основания",
       "en": "asked for a written justification",
       "kk": "жазбаша негіздеме талап етті"
     },
     {
-      "ru": "назвал срок возврата",
+      "ru": "Названный срок возврата",
       "en": "named a return deadline",
       "kk": "қайтару мерзімін атады"
     }
@@ -46,37 +46,37 @@
   "mistake_tags": [
     {
       "id": "no_written_basis",
-      "ru": "не потребовал письменное основание",
+      "ru": "Нет требования письменного основания",
       "en": "did not ask for a written justification",
       "kk": "жазбаша негіздеме талап етпеді"
     },
     {
       "id": "no_deadline",
-      "ru": "не назвал срок",
+      "ru": "Не назван срок",
       "en": "did not name a deadline",
       "kk": "мерзім атамады"
     },
     {
       "id": "vague_deadline",
-      "ru": "срок без даты и последствий",
+      "ru": "Срок без даты и последствий",
       "en": "deadline without a date or consequences",
       "kk": "күні мен салдары жоқ мерзім"
     },
     {
       "id": "accepted_pressure",
-      "ru": "уступил давлению",
+      "ru": "Уступка давлению",
       "en": "gave in to pressure",
       "kk": "қысымға көнді"
     },
     {
       "id": "oral_claim_unchallenged",
-      "ru": "не возразил на «устную договорённость»",
+      "ru": "Нет возражения на «устную договорённость»",
       "en": "did not challenge the “verbal agreement”",
       "kk": "«ауызша келісімге» қарсылық білдірмеді"
     },
     {
       "id": "other",
-      "ru": "другое",
+      "ru": "Другое",
       "en": "other",
       "kk": "басқа"
     }

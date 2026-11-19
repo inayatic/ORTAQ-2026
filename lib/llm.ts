@@ -16,7 +16,7 @@ const MOCK_REPLIES = [
 
 export const MOCK_REVIEW = {
   summary: "Демо-разбор (mock-режим).",
-  scores: [{ criterion: "потребовал письменное основание", score: 1, comment: "Демо." }],
+  scores: [{ criterion: "Требование письменного основания", score: 1, comment: "Демо." }],
   mistakes: [],
   rights: [],
   next_steps: ["Напишите письменное заявление по шаблону."],

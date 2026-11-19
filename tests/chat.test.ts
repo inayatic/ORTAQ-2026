@@ -80,3 +80,10 @@ describe("streamFilter и clientIp", () => {
     expect(clientIp(req)).toBe("9.9.9.9");
   });
 });
+
+it("персонаж обязан отвечать на выбранном языке даже при другом языке студента", () => {
+  const s = getScenario("rent-deposit")!;
+  for (const [l, n] of [["kk", "казахском"], ["en", "английском"], ["ru", "русском"]] as const) {
+    expect(buildCharacterPrompt(s, "soft", l)).toContain(`только на ${n} языке, даже если студент пишет на другом`);
+  }
+});
