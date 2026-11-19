@@ -8,9 +8,12 @@ import { getDict, LANGS } from "@/lib/i18n";
 import { getStats, recordReview } from "@/lib/db";
 
 describe.each(loadScenarios().map((s) => [s.id, s] as const))("сценарий %s", (_id, s) => {
-  it("справка существует и пока без проверенных фактов", () => {
+  it("справка существует, содержит проверяемые факты со ссылками на статьи и без TODO-VERIFY", () => {
     expect(fs.existsSync(path.join("content/legal", s.legal_ref))).toBe(true);
-    expect(legalFacts(s)).toEqual([]);
+    const facts = legalFacts(s);
+    expect(facts.length).toBeGreaterThanOrEqual(5);
+    for (const f of facts) expect(f).not.toContain("TODO-VERIFY");
+    expect(facts.some((f) => /ст\.\s*\d/.test(f))).toBe(true);
   });
   it("шаблон использует только известные поля и не называет статей", () => {
     const tpl = getTemplate(s);
@@ -70,7 +73,8 @@ describe("демо-режим", () => {
       expect(review.scores).toHaveLength(s.success_criteria.length);
       expect(review.mistakes.length).toBeGreaterThan(0);
       for (const m of review.mistakes) expect(msgs[0].content + msgs[2].content).toContain(m.quote);
-      expect(review.rights).toHaveLength(1); // справки не проверены
+      expect(review.rights.length).toBeGreaterThan(0);
+      expect(review.rights.every((r) => legalFacts(s).includes(r))).toBe(true); // только строки справки
     }
   });
 });

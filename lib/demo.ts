@@ -16,7 +16,7 @@ const load = (s: Scenario): Demo =>
 export const demoReplies = (s: Scenario) => load(s).replies;
 
 /** Демо без ИИ: балл по числу реплик студента с ключевыми словами; цитаты — реальные реплики студента. */
-export function demoReview(s: Scenario, messages: Message[]): Review {
+export function demoReview(s: Scenario, messages: Message[], facts: string[] = []): Review {
   const d = load(s);
   const student = messages.filter((m) => m.role === "user").map((m) => m.content);
   const scores = s.success_criteria.map(({ ru: criterion }, i) => {
@@ -35,7 +35,7 @@ export function demoReview(s: Scenario, messages: Message[]): Review {
       better_phrase: c.better,
       tag: c.tag,
     })),
-    rights: [],
+    rights: facts.slice(0, 3), // реальные строки справки, ничего нового
     next_steps: d.next_steps,
   };
 }

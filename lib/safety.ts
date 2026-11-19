@@ -23,7 +23,8 @@ export function checkInput(text: string): InputError | null {
 // Любая ссылка на статью (рус/англ/каз), кроме разрешённых справкой, заменяется на «[…]».
 // shortcut: в потоке фильтр работает по куску, номер, разрезанный границей чанков, пройдёт; усилить буферизацией.
 const ARTICLE = /(?<!\p{L})(?:ст(?:атья|атьи|атье|атью|\.)|art(?:icle|\.)|бап)\s*\d+[\d.\-]*|\d+\s*-?\s*бап/giu;
-const norm = (s: string) => s.toLowerCase().replace(/\s+/g, "");
+// Сравниваем по номеру: «ст. 601», «статья 601» и «601-бап» — одна и та же статья.
+const norm = (s: string) => s.match(/\d[\d.\-]*/)?.[0] ?? s;
 export const articlesIn = (text: string) => new Set((text.match(ARTICLE) ?? []).map(norm));
 export const stripArticles = (text: string, allowed: Set<string> = new Set()) =>
   text.replace(ARTICLE, (m) => (allowed.has(norm(m)) ? m : "[…]"));

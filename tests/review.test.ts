@@ -31,19 +31,27 @@ describe("схема", () => {
 });
 
 describe("справка", () => {
-  it("TODO-VERIFY не попадает в факты", () => expect(legalFacts(s)).toEqual([]));
+  it("строки с TODO-VERIFY не попадают в факты", () => expect(legalFacts(s).join("")).not.toContain("TODO-VERIFY"));
 });
 
-describe.each(DIALOGS.map((d, i) => [i + 1, ...d] as const))("диалог %i", (_n, messages, quote) => {
-  it("при TODO-VERIFY нет номеров статей, чужих цитат и правовых утверждений", async () => {
-    mocked.mockResolvedValue(badModel(quote));
-    const { review, fallback } = await generateReview(s, "ru", messages);
-    expect(fallback).toBe(false);
+describe.each(DIALOGS.map((d, i) => [i + 1, ...d] as const))("диалог %i, справка без проверенных фактов", (_n, messages, quote) => {
+  it("нет номеров статей, чужих цитат и правовых утверждений", () => {
+    const review = sanitize(badModel(quote), [], "ru", messages);
     expect(reviewSchema.safeParse(review).success).toBe(true);
     expect(JSON.stringify(review)).not.toMatch(/(ст\.|стать[яи]|art)\s*\d/i);
     expect(review.mistakes.map((m) => m.quote)).toEqual([quote]);
     expect(review.rights).toHaveLength(1);
     expect(review.rights[0]).not.toMatch(/10 дней/);
+  });
+});
+
+describe("generateReview с настоящей справкой", () => {
+  it("оставляет статьи из справки, убирает чужие и выдуманные", async () => {
+    const facts = legalFacts(s);
+    const allowed = facts.join(" ").match(/ст\.\s*(\d+)/)![1];
+    mocked.mockResolvedValue({ ...badModel(DIALOGS[0][1]), rights: [`по ст. ${allowed} и по ст. 999`] });
+    const { review } = await generateReview(s, "ru", DIALOGS[0][0]);
+    expect(review.rights[0]).toBe(`по ст. ${allowed} и по […]`);
   });
 });
 
@@ -80,6 +88,10 @@ describe("sanitize со справкой", () => {
     const r = sanitize({ ...badModel("x"), summary: "ст. 5 и ст. 9", rights: ["см. ст. 5, ст. 9"] }, facts, "ru", []);
     expect(r.summary).toBe("ст. 5 и […]");
     expect(r.rights).toEqual(["см. ст. 5, […]"]);
+  });
+  it("разрешённый номер статьи не режется при другой форме записи", () => {
+    const r = sanitize({ ...badModel("x"), summary: "Статья 5 и Article 9" }, ["Срок: ст. 5"], "ru", []);
+    expect(r.summary).toBe("Статья 5 и […]");
   });
   it("ловит английский и казахский формат", () => {
     const r = sanitize({ ...badModel("x"), summary: "Article 12 и 5-бап" }, [], "ru", []);

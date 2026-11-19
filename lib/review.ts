@@ -70,7 +70,7 @@ export async function generateReview(s: Scenario, lang: Lang, messages: Message[
     const schema = makeReviewSchema(s.mistake_tags.map((t) => t.id));
     const raw = await chatJson([{ role: "user", content: transcript }], schema, {
       system: buildReviewPrompt(s, lang, facts),
-      mock: process.env.LLM_MOCK === "true" ? demoReview(s, messages) : undefined,
+      mock: process.env.LLM_MOCK === "true" ? demoReview(s, messages, facts) : undefined,
     });
     return { review: sanitize(raw, facts, lang, messages, s.success_criteria.map((c) => c.ru)), fallback: false };
   } catch (e) {
