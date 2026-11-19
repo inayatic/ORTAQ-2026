@@ -48,5 +48,43 @@
   ],
   "legal_ref": "unpaid-internship.md",
   "template": "unpaid-internship-request.md",
-  "max_turns": 10
+  "max_turns": 10,
+  "mistake_tags": [
+    {
+      "id": "no_written_terms",
+      "ru": "не потребовал письменных условий",
+      "en": "did not ask for the terms in writing",
+      "kk": "шарттарды жазбаша талап етпеді"
+    },
+    {
+      "id": "no_pay_question",
+      "ru": "не спросил про оплату",
+      "en": "did not ask about pay",
+      "kk": "ақы туралы сұрамады"
+    },
+    {
+      "id": "agreed_vague_terms",
+      "ru": "согласился на размытые условия",
+      "en": "agreed to vague terms",
+      "kk": "анық емес шарттарға келісті"
+    },
+    {
+      "id": "accepted_pressure",
+      "ru": "уступил давлению",
+      "en": "gave in to pressure",
+      "kk": "қысымға көнді"
+    },
+    {
+      "id": "no_next_step",
+      "ru": "не назвал следующий шаг",
+      "en": "did not name a next step",
+      "kk": "келесі қадамды атамады"
+    },
+    {
+      "id": "other",
+      "ru": "другое",
+      "en": "other",
+      "kk": "басқа"
+    }
+  ]
 }

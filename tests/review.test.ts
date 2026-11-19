@@ -58,6 +58,15 @@ describe("сбои модели", () => {
   });
 });
 
+describe("sanitize: цитаты", () => {
+  it("убирает повтор одной цитаты и оставляет не больше 3 ошибок", () => {
+    const m = (quote: string) => ({ quote, problem: "p", better_phrase: "b", tag: "t" });
+    const msgs = [{ role: "user" as const, content: "раз два три четыре пять" }];
+    const r = sanitize({ ...badModel("x"), mistakes: [m("раз"), m("Раз"), m("два"), m("три"), m("четыре")] }, [], "ru", msgs);
+    expect(r.mistakes.map((x) => x.quote)).toEqual(["раз", "два", "три"]);
+  });
+});
+
 describe("sanitize: критерии", () => {
   it("возвращает каноническое название, если модель сменила регистр", () => {
     const r = sanitize({ ...badModel("x"), scores: [{ criterion: "Потребовал письменное основание", score: 1, comment: "" }] }, [], "en", [], ["потребовал письменное основание"]);

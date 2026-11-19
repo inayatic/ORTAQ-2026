@@ -48,5 +48,49 @@
   ],
   "legal_ref": "consumer-refund.md",
   "template": "consumer-refund-claim.md",
-  "max_turns": 10
+  "max_turns": 10,
+  "mistake_tags": [
+    {
+      "id": "unclear_demand",
+      "ru": "нечёткое требование",
+      "en": "unclear demand",
+      "kk": "талап анық емес"
+    },
+    {
+      "id": "no_written_refusal",
+      "ru": "не потребовал письменный отказ",
+      "en": "did not ask for a written refusal",
+      "kk": "жазбаша бас тартуды талап етпеді"
+    },
+    {
+      "id": "no_deadline",
+      "ru": "не назвал срок",
+      "en": "did not name a deadline",
+      "kk": "мерзім атамады"
+    },
+    {
+      "id": "accepted_substitute",
+      "ru": "согласился на замену вместо возврата",
+      "en": "accepted a substitute instead of a refund",
+      "kk": "ақшаны қайтарудың орнына ауыстыруға келісті"
+    },
+    {
+      "id": "no_evidence",
+      "ru": "не привёл факты и документы",
+      "en": "gave no facts or documents",
+      "kk": "факті мен құжат келтірмеді"
+    },
+    {
+      "id": "accepted_pressure",
+      "ru": "уступил давлению",
+      "en": "gave in to pressure",
+      "kk": "қысымға көнді"
+    },
+    {
+      "id": "other",
+      "ru": "другое",
+      "en": "other",
+      "kk": "басқа"
+    }
+  ]
 }

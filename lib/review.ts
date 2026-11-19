@@ -8,13 +8,18 @@ import { buildReviewPrompt } from "./prompts";
 import { articlesIn, stripArticles } from "./safety";
 import type { Scenario } from "./scenarios";
 
-export const reviewSchema = z.object({
-  summary: z.string(),
-  scores: z.array(z.object({ criterion: z.string(), score: z.number().int().min(0).max(2), comment: z.string() })),
-  mistakes: z.array(z.object({ quote: z.string(), problem: z.string(), better_phrase: z.string(), tag: z.string() })),
-  rights: z.array(z.string()),
-  next_steps: z.array(z.string()),
-});
+/** tags — допустимые теги ошибок сценария; без аргумента тег — любая строка. */
+export const makeReviewSchema = (tags?: string[]) =>
+  z.object({
+    summary: z.string(),
+    scores: z.array(z.object({ criterion: z.string(), score: z.number().int().min(0).max(2), comment: z.string() })),
+    mistakes: z.array(
+      z.object({ quote: z.string(), problem: z.string(), better_phrase: z.string(), tag: tags ? z.enum(tags as [string, ...string[]]) : z.string() }),
+    ),
+    rights: z.array(z.string()),
+    next_steps: z.array(z.string()),
+  });
+export const reviewSchema = makeReviewSchema();
 export type Review = z.infer<typeof reviewSchema>;
 
 /** Проверенные факты справки: строки «- …» без TODO-VERIFY. */
@@ -39,8 +44,10 @@ export function sanitize(r: Review, facts: string[], lang: Lang, messages: Messa
     summary: clean(r.summary),
     // Модель может изменить регистр названия критерия; возвращаем каноническое (русское) для статистики и перевода в интерфейсе.
     scores: r.scores.map((x) => ({ ...x, criterion: criteria.find((k) => flat(k) === flat(x.criterion)) ?? x.criterion, comment: clean(x.comment) })),
+    // Цитата должна быть у студента, без повторов; не больше 3 ошибок.
     mistakes: r.mistakes
-      .filter((m) => flat(m.quote) && student.includes(flat(m.quote)))
+      .filter((m, i, all) => flat(m.quote) && student.includes(flat(m.quote)) && all.findIndex((o) => flat(o.quote) === flat(m.quote)) === i)
+      .slice(0, 3)
       .map((m) => ({ ...m, problem: clean(m.problem), better_phrase: clean(m.better_phrase) })),
     rights: facts.length ? r.rights.map(clean) : [getDict(lang).rights_unverified],
     next_steps: r.next_steps.map(clean),
@@ -60,7 +67,8 @@ export async function generateReview(s: Scenario, lang: Lang, messages: Message[
   const transcript = messages.map((m) => `${m.role === "user" ? "Студент" : s.character.name}: ${m.content}`).join("\n");
   try {
     // chatJson уже делает один повтор при невалидном ответе
-    const raw = await chatJson([{ role: "user", content: transcript }], reviewSchema, {
+    const schema = makeReviewSchema(s.mistake_tags.map((t) => t.id));
+    const raw = await chatJson([{ role: "user", content: transcript }], schema, {
       system: buildReviewPrompt(s, lang, facts),
       mock: process.env.LLM_MOCK === "true" ? demoReview(s, messages) : undefined,
     });

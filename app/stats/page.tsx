@@ -13,6 +13,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   // в БД критерий хранится по-русски и обрезан до 40 символов
   const crit = (id: string, c: string) =>
     loadScenarios().find((s) => s.id === id)?.success_criteria.find((k) => k.ru.toLowerCase().slice(0, 40) === c)?.[lang] ?? c;
+  const tag = (id: string, t: string) => loadScenarios().find((s) => s.id === id)?.mistake_tags.find((k) => k.id === t)?.[lang] ?? t;
   const title = (id: string) => loadScenarios().find((s) => s.id === id)?.title[lang] ?? id;
   return (
     <main>
@@ -40,7 +41,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
             <ul className="list-disc pl-5">
               {st.mistakes.map((r) => (
                 <li key={r.scenario_id + r.tag}>
-                  {title(r.scenario_id)} — {r.tag}: {r.n}
+                  {title(r.scenario_id)} — {tag(r.scenario_id, r.tag)}: {r.n}
                 </li>
               ))}
             </ul>

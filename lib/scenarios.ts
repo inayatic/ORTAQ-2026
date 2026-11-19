@@ -16,6 +16,7 @@ export const scenarioSchema = z.object({
   }),
   student_goal: tr,
   success_criteria: z.array(tr).min(1),
+  mistake_tags: z.array(z.object({ id: z.string().regex(/^[a-z_]+$/), ru: z.string(), kk: z.string(), en: z.string() })).min(2),
   legal_ref: z.string(),
   template: z.string(),
   max_turns: z.number().int().positive(),

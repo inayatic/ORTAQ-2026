@@ -42,5 +42,43 @@
   ],
   "legal_ref": "rent-deposit.md",
   "template": "rent-deposit-claim.md",
-  "max_turns": 10
+  "max_turns": 10,
+  "mistake_tags": [
+    {
+      "id": "no_written_basis",
+      "ru": "не потребовал письменное основание",
+      "en": "did not ask for a written justification",
+      "kk": "жазбаша негіздеме талап етпеді"
+    },
+    {
+      "id": "no_deadline",
+      "ru": "не назвал срок",
+      "en": "did not name a deadline",
+      "kk": "мерзім атамады"
+    },
+    {
+      "id": "vague_deadline",
+      "ru": "срок без даты и последствий",
+      "en": "deadline without a date or consequences",
+      "kk": "күні мен салдары жоқ мерзім"
+    },
+    {
+      "id": "accepted_pressure",
+      "ru": "уступил давлению",
+      "en": "gave in to pressure",
+      "kk": "қысымға көнді"
+    },
+    {
+      "id": "oral_claim_unchallenged",
+      "ru": "не возразил на «устную договорённость»",
+      "en": "did not challenge the “verbal agreement”",
+      "kk": "«ауызша келісімге» қарсылық білдірмеді"
+    },
+    {
+      "id": "other",
+      "ru": "другое",
+      "en": "other",
+      "kk": "басқа"
+    }
+  ]
 }

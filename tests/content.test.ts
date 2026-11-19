@@ -85,3 +85,20 @@ describe("критерии и схема для tool use", () => {
     expect(z.toJSONSchema(reviewSchema)).toMatchObject({ type: "object", required: expect.arrayContaining(["summary", "scores"]) });
   });
 });
+
+describe("теги ошибок", () => {
+  it("у каждого сценария есть other и переводы; демо использует только теги сценария", async () => {
+    const { makeReviewSchema } = await import("@/lib/review");
+    for (const s of loadScenarios()) {
+      const ids = s.mistake_tags.map((t) => t.id);
+      expect(ids).toContain("other");
+      for (const t of s.mistake_tags) for (const l of LANGS) expect(t[l].trim()).not.toBe("");
+      const demo = JSON.parse(fs.readFileSync(`content/demo/${s.id}.json`, "utf8"));
+      for (const c of demo.criteria) expect(ids).toContain(c.tag);
+      const schema = makeReviewSchema(ids);
+      const bad = { summary: "", scores: [], mistakes: [{ quote: "q", problem: "", better_phrase: "", tag: "свободный тег" }], rights: [], next_steps: [] };
+      expect(schema.safeParse(bad).success).toBe(false);
+      expect(schema.safeParse({ ...bad, mistakes: [{ ...bad.mistakes[0], tag: ids[0] }] }).success).toBe(true);
+    }
+  });
+});
