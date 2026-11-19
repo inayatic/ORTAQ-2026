@@ -1,6 +1,6 @@
 // Единственный файл, который знает о провайдере. Чтобы сменить его, правим только этот файл.
 import Anthropic from "@anthropic-ai/sdk";
-import type { z } from "zod";
+import { z } from "zod";
 
 export type Message = { role: "user" | "assistant"; content: string };
 // mock — заготовка для LLM_MOCK=true: для chat массив реплик, для chatJson готовый объект.
@@ -49,27 +49,32 @@ export async function* chat(messages: Message[], opts: ChatOptions = {}): AsyncG
   }
 }
 
-/** Структурированный ответ: один повтор при невалидном JSON, затем ошибка (запасной ответ — на вызывающем). */
+/** Структурированный ответ через tool use: модель отдаёт объект по схеме, а не текст с JSON (нет проблем с кавычками и обрезкой).
+ * Один повтор при невалидном ответе, затем ошибка (запасной ответ — на вызывающем). */
 export async function chatJson<T extends z.ZodTypeAny>(
   messages: Message[],
   schema: T,
   opts: ChatOptions = {},
 ): Promise<z.infer<T>> {
   if (mock()) return schema.parse(opts.mock ?? MOCK_REVIEW);
+  const { $schema: _, ...input_schema } = z.toJSONSchema(schema) as Record<string, unknown>;
+  const tool = { name: "submit", description: "Передай готовый результат.", input_schema: input_schema as Anthropic.Tool.InputSchema };
   let lastErr: unknown;
   for (let i = 0; i < 2; i++) {
     const res = await api().messages.create({
       model: model(),
-      system: `${opts.system ?? ""}\nОтветь только JSON без пояснений и без markdown.`,
-      max_tokens: opts.maxTokens ?? 2000,
+      system: opts.system,
+      max_tokens: opts.maxTokens ?? 4000,
+      tools: [tool],
+      tool_choice: { type: "tool", name: "submit" },
       messages,
     });
-    const text = res.content.map((b) => (b.type === "text" ? b.text : "")).join("");
-    try {
-      return schema.parse(JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)));
-    } catch (e) {
-      lastErr = e;
-    }
+    const block = res.content.find((b) => b.type === "tool_use");
+    const parsed = schema.safeParse(block && block.type === "tool_use" ? block.input : undefined);
+    if (parsed.success) return parsed.data;
+    // Только причина, без содержимого диалога.
+    console.error("chatJson invalid", { stop: res.stop_reason, issues: parsed.error.issues.map((x) => `${x.path.join(".")}:${x.code}`) });
+    lastErr = parsed.error;
   }
   throw lastErr;
 }

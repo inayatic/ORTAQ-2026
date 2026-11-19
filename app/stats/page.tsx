@@ -10,6 +10,9 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   const lang = parseLang((await searchParams).lang);
   const t = getDict(lang);
   const st = getStats();
+  // в БД критерий хранится по-русски и обрезан до 40 символов
+  const crit = (id: string, c: string) =>
+    loadScenarios().find((s) => s.id === id)?.success_criteria.find((k) => k.ru.toLowerCase().slice(0, 40) === c)?.[lang] ?? c;
   const title = (id: string) => loadScenarios().find((s) => s.id === id)?.title[lang] ?? id;
   return (
     <main>
@@ -47,7 +50,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
             <ul className="list-disc pl-5">
               {st.criteria.map((r) => (
                 <li key={r.scenario_id + r.criterion}>
-                  {title(r.scenario_id)} — {r.criterion}: {r.avg}
+                  {title(r.scenario_id)} — {crit(r.scenario_id, r.criterion)}: {r.avg}
                 </li>
               ))}
             </ul>

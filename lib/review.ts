@@ -31,13 +31,14 @@ export function legalFacts(s: Scenario): string[] {
 const flat = (t: string) => t.toLowerCase().replace(/[«»"“”]/g, "").replace(/\s+/g, " ").trim();
 
 /** Страховка поверх промпта: цитата должна быть у студента, статьи и права — только из справки. */
-export function sanitize(r: Review, facts: string[], lang: Lang, messages: Message[]): Review {
+export function sanitize(r: Review, facts: string[], lang: Lang, messages: Message[], criteria: string[] = []): Review {
   const student = flat(messages.filter((m) => m.role === "user").map((m) => m.content).join(" \n "));
   const allowed = articlesIn(facts.join(" "));
   const clean = (t: string) => stripArticles(t, allowed);
   return {
     summary: clean(r.summary),
-    scores: r.scores.map((x) => ({ ...x, comment: clean(x.comment) })),
+    // Модель может изменить регистр названия критерия; возвращаем каноническое (русское) для статистики и перевода в интерфейсе.
+    scores: r.scores.map((x) => ({ ...x, criterion: criteria.find((k) => flat(k) === flat(x.criterion)) ?? x.criterion, comment: clean(x.comment) })),
     mistakes: r.mistakes
       .filter((m) => flat(m.quote) && student.includes(flat(m.quote)))
       .map((m) => ({ ...m, problem: clean(m.problem), better_phrase: clean(m.better_phrase) })),
@@ -63,8 +64,9 @@ export async function generateReview(s: Scenario, lang: Lang, messages: Message[
       system: buildReviewPrompt(s, lang, facts),
       mock: process.env.LLM_MOCK === "true" ? demoReview(s, messages) : undefined,
     });
-    return { review: sanitize(raw, facts, lang, messages), fallback: false };
-  } catch {
+    return { review: sanitize(raw, facts, lang, messages, s.success_criteria.map((c) => c.ru)), fallback: false };
+  } catch (e) {
+    console.error("review failed", e instanceof z.ZodError ? e.issues.map((x) => x.code) : (e as Error).message);
     return { review: fallbackReview(lang), fallback: true };
   }
 }

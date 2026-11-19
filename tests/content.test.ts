@@ -74,3 +74,14 @@ describe("демо-режим", () => {
     }
   });
 });
+
+describe("критерии и схема для tool use", () => {
+  it("критерии переведены на все языки", () => {
+    for (const s of loadScenarios()) for (const c of s.success_criteria) for (const l of LANGS) expect(c[l].trim()).not.toBe("");
+  });
+  it("схема разбора переводится в JSON Schema объекта", async () => {
+    const { z } = await import("zod");
+    const { reviewSchema } = await import("@/lib/review");
+    expect(z.toJSONSchema(reviewSchema)).toMatchObject({ type: "object", required: expect.arrayContaining(["summary", "scores"]) });
+  });
+});

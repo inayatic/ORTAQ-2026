@@ -31,7 +31,7 @@ export default async function ReviewPage({
       <h1 className="mt-3 text-xl font-bold">
         {t.review_title}: {s.title[lang]}
       </h1>
-      <ReviewView scenarioId={s.id} lang={lang} level={level} t={t} />
+      <ReviewView scenarioId={s.id} lang={lang} level={level} t={t} labels={Object.fromEntries(s.success_criteria.map((c) => [c.ru, c[lang]]))} />
       <p className="mt-6">
         <Link href={`/scenario/${s.id}/template?lang=${lang}`} className="underline">
           {t.template_link}

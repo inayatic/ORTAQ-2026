@@ -30,9 +30,21 @@
     "en": "Get written confirmation of the internship terms or a clear answer about pay."
   },
   "success_criteria": [
-    "потребовал письменное оформление условий",
-    "прямо спросил про оплату",
-    "не согласился работать на размытых условиях"
+    {
+      "ru": "потребовал письменное оформление условий",
+      "en": "asked for the terms in writing",
+      "kk": "шарттарды жазбаша ресімдеуді талап етті"
+    },
+    {
+      "ru": "прямо спросил про оплату",
+      "en": "asked directly about pay",
+      "kk": "ақы туралы тікелей сұрады"
+    },
+    {
+      "ru": "не согласился работать на размытых условиях",
+      "en": "refused to work on vague terms",
+      "kk": "анық емес шарттармен жұмыс істеуге келіспеді"
+    }
   ],
   "legal_ref": "unpaid-internship.md",
   "template": "unpaid-internship-request.md",

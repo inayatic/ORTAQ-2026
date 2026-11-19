@@ -30,9 +30,21 @@
     "en": "Get your money back or a written refusal with the reason."
   },
   "success_criteria": [
-    "чётко назвал требование (возврат денег)",
-    "потребовал письменный ответ с причиной отказа",
-    "назвал срок ответа"
+    {
+      "ru": "чётко назвал требование (возврат денег)",
+      "en": "stated the demand clearly (refund)",
+      "kk": "талапты нақты айтты (ақшаны қайтару)"
+    },
+    {
+      "ru": "потребовал письменный ответ с причиной отказа",
+      "en": "demanded a written answer with the reason for refusal",
+      "kk": "бас тартудың себебі көрсетілген жазбаша жауап талап етті"
+    },
+    {
+      "ru": "назвал срок ответа",
+      "en": "named a deadline for the answer",
+      "kk": "жауап мерзімін атады"
+    }
   ],
   "legal_ref": "consumer-refund.md",
   "template": "consumer-refund-claim.md",

@@ -19,7 +19,7 @@ export const demoReplies = (s: Scenario) => load(s).replies;
 export function demoReview(s: Scenario, messages: Message[]): Review {
   const d = load(s);
   const student = messages.filter((m) => m.role === "user").map((m) => m.content);
-  const scores = s.success_criteria.map((criterion, i) => {
+  const scores = s.success_criteria.map(({ ru: criterion }, i) => {
     const c = d.criteria[i];
     const hits = student.filter((m) => c.keywords.some((k) => m.toLowerCase().includes(k))).length;
     const score = Math.min(2, hits);

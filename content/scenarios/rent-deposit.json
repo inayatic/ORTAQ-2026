@@ -29,8 +29,16 @@
     "en": "Get the deposit back or a written reason for withholding it."
   },
   "success_criteria": [
-    "потребовал письменное основание",
-    "назвал срок возврата"
+    {
+      "ru": "потребовал письменное основание",
+      "en": "asked for a written justification",
+      "kk": "жазбаша негіздеме талап етті"
+    },
+    {
+      "ru": "назвал срок возврата",
+      "en": "named a return deadline",
+      "kk": "қайтару мерзімін атады"
+    }
   ],
   "legal_ref": "rent-deposit.md",
   "template": "rent-deposit-claim.md",

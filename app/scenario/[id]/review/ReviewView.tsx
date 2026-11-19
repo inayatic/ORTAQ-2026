@@ -5,7 +5,7 @@ import type { Review } from "@/lib/review";
 
 type State = { status: "loading" } | { status: "empty" } | { status: "done"; review: Review; fallback: boolean };
 
-export default function ReviewView({ scenarioId, lang, level, t }: { scenarioId: string; lang: Lang; level: Level; t: Dict }) {
+export default function ReviewView({ scenarioId, lang, level, t, labels }: { scenarioId: string; lang: Lang; level: Level; t: Dict; labels: Record<string, string> }) {
   const [state, setState] = useState<State>({ status: "loading" });
 
   const [attempt, setAttempt] = useState(0);
@@ -63,8 +63,8 @@ export default function ReviewView({ scenarioId, lang, level, t }: { scenarioId:
             {r.scores.map((s, i) => (
               <li key={i}>
                 <div className="flex items-center gap-2">
-                  <span className="flex-1">{s.criterion}</span>
-                  <meter min={0} max={2} value={s.score} aria-label={s.criterion} className="w-24" />
+                  <span className="flex-1">{labels[s.criterion] ?? s.criterion}</span>
+                  <meter min={0} max={2} value={s.score} aria-label={labels[s.criterion] ?? s.criterion} className="w-24" />
                   <span>{s.score}/2</span>
                 </div>
                 <p className="text-sm text-slate-700">{s.comment}</p>
