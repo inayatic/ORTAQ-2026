@@ -21,7 +21,6 @@ export function checkInput(text: string): InputError | null {
 }
 
 // Любая ссылка на статью (рус/англ/каз), кроме разрешённых справкой, заменяется на «[…]».
-// shortcut: в потоке фильтр работает по куску, номер, разрезанный границей чанков, пройдёт; усилить буферизацией.
 const ARTICLE = /(?<!\p{L})(?:ст(?:атья|атьи|атье|атью|\.)|art(?:icle|\.)|бап)\s*\d+[\d.\-]*|\d+\s*-?\s*бап/giu;
 // Сравниваем по номеру: «ст. 601», «статья 601» и «601-бап» — одна и та же статья.
 const norm = (s: string) => s.match(/\d[\d.\-]*/)?.[0] ?? s;
@@ -41,4 +40,30 @@ export function rateLimit(key: string, now = Date.now(), limit = 20, windowMs = 
   recent.push(now);
   hits.set(key, recent);
   return true;
+}
+
+// Render дописывает адрес клиента в конец x-forwarded-for; первое значение клиент может подделать, поэтому берём последнее.
+export const clientIp = (req: Request) => req.headers.get("x-forwarded-for")?.split(",").pop()?.trim() || "local";
+
+// Фильтр для потока: отдаёт текст до последнего «безопасного» пробела, чтобы ссылка на статью,
+// разрезанная границей чанков («ст.» | «601»), не прошла мимо filterOutput.
+const OPEN_REF = /(?:(?<!\p{L})(?:ст\p{L}*\.?|art\p{L}*\.?|бап)|\d)\s*-?\s*$/iu;
+export function streamFilter() {
+  let buf = "";
+  return {
+    push(chunk: string): string {
+      buf += chunk;
+      let cut = buf.search(/\s\S*$/);
+      while (cut > 0 && OPEN_REF.test(buf.slice(0, cut))) cut = buf.slice(0, cut).search(/\s\S*$/);
+      if (cut <= 0) return "";
+      const out = filterOutput(buf.slice(0, cut));
+      buf = buf.slice(cut);
+      return out;
+    },
+    flush: () => {
+      const out = filterOutput(buf);
+      buf = "";
+      return out;
+    },
+  };
 }

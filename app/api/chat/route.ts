@@ -4,7 +4,7 @@ import { demoReplies } from "@/lib/demo";
 import { LANGS, LEVELS } from "@/lib/i18n";
 import { buildCharacterPrompt } from "@/lib/prompts";
 import { getScenario } from "@/lib/scenarios";
-import { checkInput, filterOutput, rateLimit } from "@/lib/safety";
+import { checkInput, streamFilter, rateLimit, clientIp } from "@/lib/safety";
 
 const body = z.object({
   scenarioId: z.string(),
@@ -16,7 +16,7 @@ const body = z.object({
 const fail = (error: string, status: number) => Response.json({ error }, { status });
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "local";
+  const ip = clientIp(req);
   if (!rateLimit(ip)) return fail("rate_limited", 429);
 
   const parsed = body.safeParse(await req.json().catch(() => null));
@@ -46,11 +46,14 @@ export async function POST(req: Request) {
   const enc = new TextEncoder();
   const stream = new ReadableStream({
     async start(c) {
+      const f = streamFilter();
       try {
         while (!r.done) {
-          c.enqueue(enc.encode(filterOutput(r.value)));
+          const out = f.push(r.value);
+          if (out) c.enqueue(enc.encode(out));
           r = await it.next();
         }
+        c.enqueue(enc.encode(f.flush()));
         c.close();
       } catch (e) {
         c.error(e);

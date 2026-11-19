@@ -3,7 +3,7 @@ import { LANGS, LEVELS } from "@/lib/i18n";
 import { recordReview } from "@/lib/db";
 import { generateReview } from "@/lib/review";
 import { getScenario } from "@/lib/scenarios";
-import { MAX_INPUT, rateLimit } from "@/lib/safety";
+import { MAX_INPUT, rateLimit, clientIp } from "@/lib/safety";
 
 const body = z.object({
   scenarioId: z.string(),
@@ -15,7 +15,7 @@ const body = z.object({
 const fail = (error: string, status: number) => Response.json({ error }, { status });
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "local";
+  const ip = clientIp(req);
   if (!rateLimit("review:" + ip, Date.now(), 10)) return fail("rate_limited", 429);
 
   const parsed = body.safeParse(await req.json().catch(() => null));

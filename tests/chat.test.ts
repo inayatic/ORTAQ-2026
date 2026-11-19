@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { checkInput, filterOutput, rateLimit } from "@/lib/safety";
+import { checkInput, filterOutput, rateLimit, streamFilter, clientIp } from "@/lib/safety";
 import { buildCharacterPrompt } from "@/lib/prompts";
 import { getScenario } from "@/lib/scenarios";
 import { POST } from "@/app/api/chat/route";
@@ -60,5 +60,23 @@ describe("POST /api/chat", () => {
     let last = 200;
     for (let i = 0; i < 25; i++) last = (await POST(req({ ...ok, messages: [{ role: "user", content: "а" }] }, "same"))).status;
     expect(last).toBe(429);
+  });
+});
+
+describe("streamFilter и clientIp", () => {
+  const run = (chunks: string[]) => {
+    const f = streamFilter();
+    return chunks.map((c) => f.push(c)).join("") + f.flush();
+  };
+  it("вырезает статью, разрезанную границей чанков", () => {
+    expect(run(["Согласно ст", ". 6", "01 ГК вы обязаны"])).toBe("Согласно […] ГК вы обязаны");
+    expect(run(["по статье ", "601", " ГК"])).toBe("по […] ГК");
+  });
+  it("обычный текст проходит без потерь", () => {
+    expect(run(["Привет, ", "как ", "дела? 5 дней"])).toBe("Привет, как дела? 5 дней");
+  });
+  it("берёт последний адрес из x-forwarded-for", () => {
+    const req = new Request("http://x", { headers: { "x-forwarded-for": "1.1.1.1, 9.9.9.9" } });
+    expect(clientIp(req)).toBe("9.9.9.9");
   });
 });
