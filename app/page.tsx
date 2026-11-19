@@ -42,6 +42,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ l
           </li>
         ))}
       </ul>
+      <p className="mt-4 text-sm">
+        <Link href={`/stats?lang=${lang}`} className="underline">
+          {t.stats_link}
+        </Link>
+      </p>
     </main>
   );
 }

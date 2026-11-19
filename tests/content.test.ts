@@ -1,0 +1,43 @@
+import fs from "node:fs";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+import { getScenario, getTemplate, loadScenarios } from "@/lib/scenarios";
+import { TEMPLATE_FIELDS, fieldsOf, render } from "@/lib/template";
+import { legalFacts } from "@/lib/review";
+import { getDict, LANGS } from "@/lib/i18n";
+import { getStats, recordReview } from "@/lib/db";
+
+describe.each(loadScenarios().map((s) => [s.id, s] as const))("сценарий %s", (_id, s) => {
+  it("справка существует и пока без проверенных фактов", () => {
+    expect(fs.existsSync(path.join("content/legal", s.legal_ref))).toBe(true);
+    expect(legalFacts(s)).toEqual([]);
+  });
+  it("шаблон использует только известные поля и не называет статей", () => {
+    const tpl = getTemplate(s);
+    for (const f of fieldsOf(tpl)) expect(TEMPLATE_FIELDS as readonly string[]).toContain(f);
+    expect(tpl).not.toMatch(/(ст\.|стать[яи])\s*\d/i);
+    for (const l of LANGS) for (const f of fieldsOf(tpl)) expect(getDict(l)[`f_${f}` as keyof ReturnType<typeof getDict>]).toBeTruthy();
+  });
+});
+
+it("три сценария", () => expect(loadScenarios().map((s) => s.id).sort()).toEqual(["consumer-refund", "rent-deposit", "unpaid-internship"]));
+
+describe("шаблон", () => {
+  it("подставляет значения и оставляет прочерк", () => {
+    expect(render("A {{amount}} B {{date}}", { amount: " 5000 " })).toBe("A 5000 B ________");
+  });
+});
+
+describe("статистика", () => {
+  it("агрегирует ошибки и баллы без текстов", () => {
+    const rec = (tags: string[], score: number) =>
+      recordReview({ scenarioId: "rent-deposit", level: "soft", lang: "ru", turns: 3, scores: [{ criterion: "срок", score }], mistakeTags: tags });
+    rec(["Нет требования", "угроза"], 0);
+    rec(["нет требования"], 2);
+    const st = getStats();
+    expect(st.sessions).toEqual([{ scenario_id: "rent-deposit", n: 2 }]);
+    expect(st.mistakes[0]).toEqual({ scenario_id: "rent-deposit", tag: "нет требования", n: 2 });
+    expect(st.criteria[0].avg).toBe(1);
+    expect(getScenario("rent-deposit")).toBeTruthy();
+  });
+});

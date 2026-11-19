@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Dict, Lang } from "@/lib/i18n";
+import type { Dict, Lang, Level } from "@/lib/i18n";
 import type { Review } from "@/lib/review";
 
 type State = { status: "loading" } | { status: "empty" } | { status: "done"; review: Review; fallback: boolean };
 
-export default function ReviewView({ scenarioId, lang, t }: { scenarioId: string; lang: Lang; t: Dict }) {
+export default function ReviewView({ scenarioId, lang, level, t }: { scenarioId: string; lang: Lang; level: Level; t: Dict }) {
   const [state, setState] = useState<State>({ status: "loading" });
 
   const [attempt, setAttempt] = useState(0);
@@ -23,7 +23,7 @@ export default function ReviewView({ scenarioId, lang, t }: { scenarioId: string
         const res = await fetch("/api/review", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ scenarioId, lang, messages }),
+          body: JSON.stringify({ scenarioId, lang, level, messages }),
         });
         if (!res.ok) throw new Error();
         set({ status: "done", ...(await res.json()) });
@@ -34,7 +34,7 @@ export default function ReviewView({ scenarioId, lang, t }: { scenarioId: string
     return () => {
       off = true;
     };
-  }, [scenarioId, lang, t, attempt]);
+  }, [scenarioId, lang, level, t, attempt]);
 
   const retry = () => {
     setState({ status: "loading" });

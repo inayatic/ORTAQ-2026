@@ -71,7 +71,7 @@ export default function Chat(p: { scenarioId: string; level: Level; lang: Lang; 
         <span>
           {t.turn} {turns} {t.of} {p.maxTurns}
         </span>
-        <Link href={`/scenario/${p.scenarioId}/review?lang=${p.lang}`} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
+        <Link href={`/scenario/${p.scenarioId}/review?lang=${p.lang}&level=${p.level}`} className="rounded border px-3 py-1 focus:outline-2 focus:outline-offset-2 focus:outline-slate-900">
           {t.finish}
         </Link>
       </div>

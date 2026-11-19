@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getScenario } from "@/lib/scenarios";
-import { getDict, parseLang } from "@/lib/i18n";
+import { getDict, parseLang, parseLevel } from "@/lib/i18n";
 import ReviewView from "./ReviewView";
 
 export const dynamic = "force-dynamic";
@@ -11,12 +11,13 @@ export default async function ReviewPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; level?: string }>;
 }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const s = getScenario(id);
   if (!s) notFound();
   const lang = parseLang(sp.lang);
+  const level = parseLevel(sp.level);
   const t = getDict(lang);
   return (
     <main>
@@ -27,7 +28,12 @@ export default async function ReviewPage({
       <h1 className="mt-3 text-xl font-bold">
         {t.review_title}: {s.title[lang]}
       </h1>
-      <ReviewView scenarioId={s.id} lang={lang} t={t} />
+      <ReviewView scenarioId={s.id} lang={lang} level={level} t={t} />
+      <p className="mt-6">
+        <Link href={`/scenario/${s.id}/template?lang=${lang}`} className="underline">
+          {t.template_link}
+        </Link>
+      </p>
     </main>
   );
 }

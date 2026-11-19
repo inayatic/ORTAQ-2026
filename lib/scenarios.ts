@@ -33,3 +33,6 @@ export function loadScenarios(): Scenario[] {
 }
 
 export const getScenario = (id: string) => loadScenarios().find((s) => s.id === id);
+
+export const getTemplate = (s: Scenario) =>
+  fs.readFileSync(path.join(process.cwd(), "content/templates", path.basename(s.template)), "utf8");
