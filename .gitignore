@@ -7,3 +7,5 @@ data/*
 !data/.gitkeep
 next-env.d.ts
 *.tsbuildinfo
+
+evals/out

@@ -1,13 +1,14 @@
 export const MAX_INPUT = 800;
 
 // Только попытки вытащить/переписать правила. «Выйди из роли» не блокируем: на это отвечает сам персонаж.
+// \p{L} вместо \w: \w не совпадает с кириллицей.
 const INJECTION = [
-  /ignore (all |the |your )?(previous|above|prior|system)/i,
-  /(reveal|show|print|repeat) (me )?(your|the) (system )?(prompt|instructions)/i,
-  /system prompt/i,
-  /системн\w* (промпт|инструкц)/i,
-  /(игнорируй|забудь)\w* (все |свои |предыдущ\w* )?(инструкц|правил|указани)/i,
-  /(покажи|выведи|повтори|раскрой) (свои |мне )?(инструкц|промпт)/i,
+  /ignore (all |the |your )?(previous|above|prior|system)/iu,
+  /(reveal|show|print|repeat) (me )?(your|the) (system )?(prompt|instructions)/iu,
+  /system prompt/iu,
+  /системн\p{L}* (промпт|инструкц)/iu,
+  /(игнорируй|забудь)\p{L}* (все |свои |предыдущ\p{L}* )?(инструкц|правил|указани)/iu,
+  /(покажи|выведи|повтори|раскрой)\p{L}* (свои |мне |свой )?(инструкц|промпт)/iu,
 ];
 
 export type InputError = "empty" | "too_long" | "injection";
